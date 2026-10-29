@@ -204,14 +204,14 @@ function [pk, cpu] = run_arm(arm, ppg, Fs)
 % Identical for every database.
 switch arm
     case 'user'
-        t = tic; pk = minel_ppg(ppg, Fs); cpu = toc(t);
+        t = tic; pk = minel_ppg_fast(ppg, Fs); cpu = toc(t);
     case 'msptd_pb'
         t = tic; pk = comparators('msptd_pb', ppg, Fs); cpu = toc(t);
     case 'msptd'
         t = tic; pk = comparators('msptd', ppg, Fs); cpu = toc(t);
     case {'plain', 'plainref'}
         opts = struct('stream', 'uniform', 'refine', strcmp(arm, 'plainref'));
-        t = tic; pk = minel_ppg(ppg, Fs, opts); cpu = toc(t);
+        t = tic; pk = minel_ppg_fast(ppg, Fs, opts); cpu = toc(t);
     otherwise
         error('Unknown arm: %s', arm);
 end

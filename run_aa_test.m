@@ -36,7 +36,13 @@ cfg.LAG_WIN_SEC          = 300;
 cfg.LAG_SEARCH_INITIAL_S = 0.8;
 cfg.LAG_SEARCH_LADDER_S  = [0.2 0.5 0.8];
 cfg.LAG_MIN_MATCHES      = 5;
-cfg.files.overlap_mask = fullfile(repo, 'overlap_mask.mat');   % use the file name from run_paper.m
+cand = [dir(fullfile(pwd,  '*overlap*.mat')); ...
+        dir(fullfile(here, '*overlap*.mat')); ...
+        dir(fullfile(repo, '*overlap*.mat'))];
+assert(~isempty(cand), 'No overlap mask (*overlap*.mat) in %s, %s or %s', pwd, here, repo);
+cfg.files.overlap_mask = fullfile(cand(1).folder, cand(1).name);
+fprintf('Overlap mask: %s\n', cfg.files.overlap_mask);
+
 cfg.files.mimic_large_test = fullfile(DATA, 'mimic-large-test/mimic_perform_large_test_a_data.mat');
 cfg.files.mimic_test       = fullfile(DATA, 'mimic_test/mimic_perform_test_all_data.mat');
 cfg.files.mimic_train      = fullfile(DATA, 'mimic_train/mimic_perform_train_all_data.mat');
@@ -120,7 +126,6 @@ end
 
 fprintf('\n===== SUMMARY: median F1 stride / box1 / box2 (median paired difference, Wilcoxon p) =====\n');
 fprintf('%s\n', summary{:});
-
 
 % =========================================================================
 function X = getm(R, names)
