@@ -1,0 +1,44 @@
+# ---------- C build output ----------
+*.o
+*.a
+*.so
+*.dylib
+*.dSYM/
+*.exe
+c/run_detector
+c/bench
+c/throughput
+c/tsan_*
+
+# ---------- MATLAB ----------
+*.mat
+*.asv
+*.autosave
+*.mex*
+slprj/
+codegen/
+
+# ---------- data and downloads (fetched by download_data.m) ----------
+*.zip
+*.part
+*.done
+dalia_mat/
+*.bin
+
+# ---------- macOS ----------
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+Icon?
+.Spotlight-V100
+.Trashes
+.fseventsd
+.TemporaryItems
+.DocumentRevisions-V100
+
+# ---------- editors ----------
+.vscode/
+.idea/
+*.swp
+*~
