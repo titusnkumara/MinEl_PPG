@@ -1,482 +1,1252 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>MinEl_PPG vs MSPTDfast (ppg-beats): benchmark results</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #f5f7f7; --surface: #ffffff; --ink: #1b2a2f; --muted: #5b6b70; --rule: #d6dfe1;
-  --teal: #00737f; --orange: #c8581a; --grey: #9aa7ab; --soft: #e9eff0;
-  color-scheme: light;
-  box-sizing: border-box;
-  padding-top: env(safe-area-inset-top, 0px);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #121a1d; --surface: #1a2428; --ink: #e3eaec; --muted: #9db0b5; --rule: #2e3c41;
-    --teal: #3fb7c2; --orange: #f08a4b; --grey: #5f7177; --soft: #223035;
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #121a1d; --surface: #1a2428; --ink: #e3eaec; --muted: #9db0b5; --rule: #2e3c41;
-  --teal: #3fb7c2; --orange: #f08a4b; --grey: #5f7177; --soft: #223035;
-  color-scheme: dark;
-}
-html { scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 56px); }
-*, *::before, *::after { box-sizing: inherit; }
-body {
-  margin: 0; background: var(--bg); color: var(--ink);
-  font: 16px/1.55 "Public Sans", "Helvetica Neue", Arial, sans-serif;
-}
-body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
-.wrap { max-width: 820px; margin: 0 auto; padding: 0 20px; }
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>MinEl_PPG vs MSPTDfast (ppg-beats): benchmark results</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #f5f7f7;
+            --surface: #ffffff;
+            --ink: #1b2a2f;
+            --muted: #5b6b70;
+            --rule: #d6dfe1;
+            --teal: #00737f;
+            --orange: #c8581a;
+            --grey: #9aa7ab;
+            --soft: #e9eff0;
+            color-scheme: light;
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
 
-header.hero { padding: 48px 0 24px; }
-h1 {
-  font: 600 clamp(32px, 6vw, 52px)/1.05 "Newsreader", Georgia, serif;
-  margin: 0 0 12px; letter-spacing: -0.01em;
-}
-.lede { font-size: 18px; color: var(--muted); max-width: 62ch; margin: 0 0 28px; }
-h2 { font: 600 28px/1.15 "Newsreader", Georgia, serif; margin: 0 0 6px; }
-.answer { margin: 0 0 18px; max-width: 66ch; }
-.key { display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; color: var(--muted); margin: 0 0 8px; }
-.key span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
-.key .u::before { background: var(--teal); } .key .m::before { background: var(--orange); }
-.key .g::before { background: transparent; border: 2px solid var(--grey); width: 8px; height: 8px; }
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #121a1d;
+                --surface: #1a2428;
+                --ink: #e3eaec;
+                --muted: #9db0b5;
+                --rule: #2e3c41;
+                --teal: #3fb7c2;
+                --orange: #f08a4b;
+                --grey: #5f7177;
+                --soft: #223035;
+                color-scheme: dark;
+            }
+        }
 
-nav.toc {
-  position: sticky; top: 0; z-index: 5; background: var(--surface);
-  border-bottom: 1px solid var(--rule); padding-top: env(safe-area-inset-top, 0px);
-}
-nav.toc .wrap { display: flex; gap: 4px; overflow-x: auto; padding-top: 8px; padding-bottom: 8px; }
-nav.toc button {
-  font: 500 14px "Public Sans", sans-serif; color: var(--muted); background: none; border: 0;
-  padding: 6px 10px; border-radius: 6px; white-space: nowrap; cursor: pointer;
-}
-nav.toc button:hover, nav.toc button.on { color: var(--ink); background: var(--soft); }
+        :root[data-theme="dark"] {
+            --bg: #121a1d;
+            --surface: #1a2428;
+            --ink: #e3eaec;
+            --muted: #9db0b5;
+            --rule: #2e3c41;
+            --teal: #3fb7c2;
+            --orange: #f08a4b;
+            --grey: #5f7177;
+            --soft: #223035;
+            color-scheme: dark;
+        }
 
-.glance { list-style: none; padding: 0; margin: 0 0 8px; border-top: 1px solid var(--rule); }
-.glance li { border-bottom: 1px solid var(--rule); }
-.glance button {
-  width: 100%; text-align: left; background: none; border: 0; padding: 12px 0; cursor: pointer;
-  display: grid; grid-template-columns: 1fr auto; gap: 16px; font: inherit; color: inherit;
-}
-.glance .q { font-weight: 600; }
-.glance .a { color: var(--muted); font-size: 15px; grid-column: 1; }
-.glance .go { grid-row: 1 / span 2; grid-column: 2; align-self: center; color: var(--teal); font-size: 14px; }
+        html {
+            scroll-padding-top: calc(env(safe-area-inset-top, 0px) + 56px);
+        }
 
-section { padding: 44px 0 8px; border-top: 1px solid var(--rule); }
-.panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 16px 16px 8px; margin-bottom: 14px; }
-.chart { overflow-x: auto; }
-.chart svg { width: 100%; min-width: 520px; height: auto; display: block; }
-.seg { display: inline-flex; border: 1px solid var(--rule); border-radius: 8px; overflow: hidden; margin: 0 0 12px; }
-.seg button { font: 500 14px "Public Sans", sans-serif; padding: 6px 12px; border: 0; background: var(--surface); color: var(--muted); cursor: pointer; }
-.seg button + button { border-left: 1px solid var(--rule); }
-.seg button.on { background: var(--teal); color: #fff; }
-button:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
-.note { font-size: 14px; color: var(--muted); margin: 6px 0 10px; max-width: 70ch; }
-details { margin: 4px 0 12px; }
-summary { cursor: pointer; color: var(--teal); font-size: 14px; font-weight: 500; }
-.tbl { overflow-x: auto; }
-table { border-collapse: collapse; width: 100%; font-size: 14px; margin-top: 8px; font-variant-numeric: tabular-nums; }
-th, td { text-align: left; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--rule); white-space: nowrap; }
-th { color: var(--muted); font-weight: 500; }
-.callout { border-left: 3px solid var(--orange); padding: 4px 0 4px 14px; margin: 14px 0; max-width: 68ch; }
-.checks { padding-left: 18px; max-width: 68ch; } .checks li { margin-bottom: 10px; }
-footer { padding: 40px 0 56px; color: var(--muted); font-size: 14px; border-top: 1px solid var(--rule); margin-top: 32px; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: inherit;
+        }
 
-/* SVG */
-svg text { fill: var(--ink); font: 13px "Public Sans", sans-serif; }
-svg .muted { fill: var(--muted); font-size: 12px; }
-svg .grid { stroke: var(--rule); stroke-width: 1; }
-svg .zero { stroke: var(--muted); stroke-width: 1; }
-svg .conn { stroke: var(--grey); stroke-width: 2.5; }
-svg .u { fill: var(--teal); } svg .m { fill: var(--orange); }
-svg .ut { fill: var(--teal); font-weight: 600; } svg .mt { fill: var(--orange); }
-svg .trace { fill: none; stroke: var(--grey); stroke-width: 1.5; }
-svg .open { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
-svg .lineu { fill: none; stroke: var(--teal); stroke-width: 2.5; }
-svg .linem { fill: none; stroke: var(--orange); stroke-width: 2.5; }
-svg .margin { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 4 3; }
-svg .ci { stroke: var(--teal); stroke-width: 2.5; }
-svg .bgrey { fill: var(--grey); } svg .bdark { fill: var(--ink); opacity: .55; }
-@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
-</style>
+        body {
+            margin: 0;
+            background: var(--bg);
+            color: var(--ink);
+            font: 16px/1.55 "Public Sans", "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0 0 auto;
+            height: env(safe-area-inset-top, 0px);
+            z-index: 10;
+            background: var(--surface);
+        }
+
+        .wrap {
+            max-width: 820px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header.hero {
+            padding: 48px 0 24px;
+        }
+
+        h1 {
+            font: 600 clamp(32px, 6vw, 52px)/1.05 "Newsreader", Georgia, serif;
+            margin: 0 0 12px;
+            letter-spacing: -0.01em;
+        }
+
+        .lede {
+            font-size: 18px;
+            color: var(--muted);
+            max-width: 62ch;
+            margin: 0 0 28px;
+        }
+
+        h2 {
+            font: 600 28px/1.15 "Newsreader", Georgia, serif;
+            margin: 0 0 6px;
+        }
+
+        .answer {
+            margin: 0 0 18px;
+            max-width: 66ch;
+        }
+
+        .key {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            color: var(--muted);
+            margin: 0 0 8px;
+        }
+
+        .key span::before {
+            content: "";
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 6px;
+            vertical-align: 0;
+        }
+
+        .key .u::before {
+            background: var(--teal);
+        }
+
+        .key .m::before {
+            background: var(--orange);
+        }
+
+        .key .g::before {
+            background: transparent;
+            border: 2px solid var(--grey);
+            width: 8px;
+            height: 8px;
+        }
+
+        nav.toc {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            background: var(--surface);
+            border-bottom: 1px solid var(--rule);
+            padding-top: env(safe-area-inset-top, 0px);
+        }
+
+        nav.toc .wrap {
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            padding-top: 8px;
+            padding-bottom: 8px;
+        }
+
+        nav.toc button {
+            font: 500 14px "Public Sans", sans-serif;
+            color: var(--muted);
+            background: none;
+            border: 0;
+            padding: 6px 10px;
+            border-radius: 6px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        nav.toc button:hover,
+        nav.toc button.on {
+            color: var(--ink);
+            background: var(--soft);
+        }
+
+        .glance {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 8px;
+            border-top: 1px solid var(--rule);
+        }
+
+        .glance li {
+            border-bottom: 1px solid var(--rule);
+        }
+
+        .glance button {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: 0;
+            padding: 12px 0;
+            cursor: pointer;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            font: inherit;
+            color: inherit;
+        }
+
+        .glance .q {
+            font-weight: 600;
+        }
+
+        .glance .a {
+            color: var(--muted);
+            font-size: 15px;
+            grid-column: 1;
+        }
+
+        .glance .go {
+            grid-row: 1 / span 2;
+            grid-column: 2;
+            align-self: center;
+            color: var(--teal);
+            font-size: 14px;
+        }
+
+        section {
+            padding: 44px 0 8px;
+            border-top: 1px solid var(--rule);
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--rule);
+            border-radius: 10px;
+            padding: 16px 16px 8px;
+            margin-bottom: 14px;
+        }
+
+        .chart {
+            overflow-x: auto;
+        }
+
+        .chart svg {
+            width: 100%;
+            min-width: 520px;
+            height: auto;
+            display: block;
+        }
+
+        .seg {
+            display: inline-flex;
+            border: 1px solid var(--rule);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 0 0 12px;
+        }
+
+        .seg button {
+            font: 500 14px "Public Sans", sans-serif;
+            padding: 6px 12px;
+            border: 0;
+            background: var(--surface);
+            color: var(--muted);
+            cursor: pointer;
+        }
+
+        .seg button+button {
+            border-left: 1px solid var(--rule);
+        }
+
+        .seg button.on {
+            background: var(--teal);
+            color: #fff;
+        }
+
+        button:focus-visible {
+            outline: 2px solid var(--teal);
+            outline-offset: 2px;
+        }
+
+        .note {
+            font-size: 14px;
+            color: var(--muted);
+            margin: 6px 0 10px;
+            max-width: 70ch;
+        }
+
+        details {
+            margin: 4px 0 12px;
+        }
+
+        summary {
+            cursor: pointer;
+            color: var(--teal);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .tbl {
+            overflow-x: auto;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 14px;
+            margin-top: 8px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 6px 10px 6px 0;
+            border-bottom: 1px solid var(--rule);
+            white-space: nowrap;
+        }
+
+        th {
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .callout {
+            border-left: 3px solid var(--orange);
+            padding: 4px 0 4px 14px;
+            margin: 14px 0;
+            max-width: 68ch;
+        }
+
+        .checks {
+            padding-left: 18px;
+            max-width: 68ch;
+        }
+
+        .checks li {
+            margin-bottom: 10px;
+        }
+
+        footer {
+            padding: 40px 0 56px;
+            color: var(--muted);
+            font-size: 14px;
+            border-top: 1px solid var(--rule);
+            margin-top: 32px;
+        }
+
+        /* SVG */
+        svg text {
+            fill: var(--ink);
+            font: 13px "Public Sans", sans-serif;
+        }
+
+        svg .muted {
+            fill: var(--muted);
+            font-size: 12px;
+        }
+
+        svg .grid {
+            stroke: var(--rule);
+            stroke-width: 1;
+        }
+
+        svg .zero {
+            stroke: var(--muted);
+            stroke-width: 1;
+        }
+
+        svg .conn {
+            stroke: var(--grey);
+            stroke-width: 2.5;
+        }
+
+        svg .u {
+            fill: var(--teal);
+        }
+
+        svg .m {
+            fill: var(--orange);
+        }
+
+        svg .ut {
+            fill: var(--teal);
+            font-weight: 600;
+        }
+
+        svg .mt {
+            fill: var(--orange);
+        }
+
+        svg .trace {
+            fill: none;
+            stroke: var(--grey);
+            stroke-width: 1.5;
+        }
+
+        svg .open {
+            fill: var(--surface);
+            stroke: var(--ink);
+            stroke-width: 1.5;
+        }
+
+        svg .lineu {
+            fill: none;
+            stroke: var(--teal);
+            stroke-width: 2.5;
+        }
+
+        svg .linem {
+            fill: none;
+            stroke: var(--orange);
+            stroke-width: 2.5;
+        }
+
+        svg .margin {
+            stroke: var(--muted);
+            stroke-width: 1.5;
+            stroke-dasharray: 4 3;
+        }
+
+        svg .ci {
+            stroke: var(--teal);
+            stroke-width: 2.5;
+        }
+
+        svg .bgrey {
+            fill: var(--grey);
+        }
+
+        svg .bdark {
+            fill: var(--ink);
+            opacity: .55;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<div class="wrap">
-  <header class="hero">
-    <h1>Ten values per second beat the benchmark</h1>
-    <p class="lede">MinEl_PPG detects PPG beats on a stream that keeps only each 0.2 s block’s minimum and maximum derivative, with its time stamp, after the input is reduced to about 30 Hz. Here it is against MSPTDfast, run with the ppg-beats benchmark’s processing chain, on seven public databases, 1,341 recordings and a held-out set unseen by either method.</p>
+    <div class="wrap">
+        <header class="hero">
+            <h1>Ten values per second beat the benchmark</h1>
+            <p class="lede">MinEl_PPG detects PPG beats on a stream that keeps only each 0.2 s block’s minimum and maximum derivative, with its time stamp, after the input is reduced to about 30 Hz. Here it is against MSPTDfast, run with the ppg-beats benchmark’s processing chain, on seven public databases, 1,341 recordings and a held-out set unseen by either method.</p>
 
-    <div class="panel">
-      <div class="seg" id="seg-hero">
-        <button data-m="both" class="on">Both streams</button>
-        <button data-m="mm">Min/max stream</button>
-        <button data-m="uni">Uniform 10 Hz</button>
-      </div>
-      <div class="key"><span class="u">Min/max stream (10 values/s)</span><span class="g">Uniform 10 Hz samples</span><span>Grey line: full-rate PPG derivative</span></div>
-      <div class="chart" id="c-hero"></div>
-      <p class="note">Real 125 Hz PPG (MIMIC PERform Training, record 3001912_0009m, about 100 bpm). Across all 195 beats of the 2 min record, the min/max stream keeps 100% of every upstroke’s peak slope at its exact sample. The uniform 10 Hz stream keeps a median 75% and misses the peak by a median 32 ms. Shown at the native rate for clarity; the detector applies the same coding after reducing the input to about 30 Hz.</p>
+            <div class="panel">
+                <div class="seg" id="seg-hero">
+                    <button data-m="both" class="on">Both streams</button>
+                    <button data-m="mm">Min/max stream</button>
+                    <button data-m="uni">Uniform 10 Hz</button>
+                </div>
+                <div class="key"><span class="u">Min/max stream (10 values/s)</span><span class="g">Uniform 10 Hz samples</span><span>Grey line: full-rate PPG derivative</span></div>
+                <div class="chart" id="c-hero"></div>
+                <p class="note">Real 125 Hz PPG (MIMIC PERform Training, record 3001912_0009m, about 100 bpm). Across all 195 beats of the 2 min record, the min/max stream keeps 100% of every upstroke’s peak slope at its exact sample. The uniform 10 Hz stream keeps a median 75% and misses the peak by a median 32 ms. Shown at the native rate for clarity; the detector applies the same coding after reducing the input to about 30 Hz.</p>
+            </div>
+
+            <ul class="glance" id="glance"></ul>
+        </header>
     </div>
 
-    <ul class="glance" id="glance"></ul>
-  </header>
-</div>
+    <nav class="toc">
+        <div class="wrap" id="toc"></div>
+    </nav>
 
-<nav class="toc"><div class="wrap" id="toc"></div></nav>
+    <main class="wrap">
+        <p class="key" style="margin-top:18px"><span class="u">MinEl_PPG</span><span class="m">MSPTDfast with the ppg-beats chain</span><span class="g">Ablation arms</span><span>* significant after Holm correction</span><span>(dev) = MSPTDfast development set</span></p>
 
-<main class="wrap">
-  <p class="key" style="margin-top:18px"><span class="u">MinEl_PPG</span><span class="m">MSPTDfast with the ppg-beats chain</span><span class="g">Ablation arms</span><span>* significant after Holm correction</span><span>(dev) = MSPTDfast development set</span></p>
+        <section id="headline">
+            <h2>Is it accurate and cheap at once?</h2>
+            <p class="answer">Yes. On the held-out set it detects more beats than MSPTDfast at under a tenth of the compute. The ablation arms show why: the decision logic alone beats MSPTDfast, and the min/max stream keeps that lead at neonatal heart rates, where uniform 10 Hz input falls behind.</p>
+            <div class="panel">
+                <div class="seg" id="seg-head"><button data-m="held" class="on">Held-out set (111 patients)</button><button data-m="neo">Neonates (100 recordings)</button></div>
+                <div class="chart" id="c-head"></div>
+                <p class="note" id="n-head"></p>
+            </div>
+        </section>
 
-  <section id="headline">
-    <h2>Is it accurate and cheap at once?</h2>
-    <p class="answer">Yes. On the held-out set it detects more beats than MSPTDfast at under a tenth of the compute. The ablation arms show why: the decision logic alone beats MSPTDfast, and the min/max stream keeps that lead at neonatal heart rates, where uniform 10 Hz input falls behind.</p>
-    <div class="panel">
-      <div class="seg" id="seg-head"><button data-m="held" class="on">Held-out set (111 patients)</button><button data-m="neo">Neonates (100 recordings)</button></div>
-      <div class="chart" id="c-head"></div>
-      <p class="note" id="n-head"></p>
-    </div>
-  </section>
+        <section id="accuracy">
+            <h2>Does it detect more beats?</h2>
+            <p class="answer">Yes. Its F1 is higher or level on all seven databases and never significantly lower. On the held-out set the patient-level gain is 0.014 (95% CI 0.012–0.016, p = 7.6 × 10⁻¹⁵), and it recovered 1,998 reference beats that MSPTDfast missed, against 796. In neonates the gain is significant under all three ECG references.</p>
+            <div class="panel">
+                <div class="seg" id="seg-acc"><button data-m="f1" class="on">F1</button><button data-m="hr">Heart-rate error</button><button data-m="rr">RR-interval error</button></div>
+                <div class="chart" id="c-acc"></div>
+                <p class="note" id="n-acc"></p>
+            </div>
+            <details>
+                <summary>Show the numbers</summary>
+                <div class="tbl" id="t-acc"></div>
+            </details>
+        </section>
 
-  <section id="accuracy">
-    <h2>Does it detect more beats?</h2>
-    <p class="answer">Yes. Its F1 is higher or level on all seven databases and never significantly lower. On the held-out set the patient-level gain is 0.014 (95% CI 0.012–0.016, p = 7.6 × 10⁻¹⁵), and it recovered 1,998 reference beats that MSPTDfast missed, against 796. In neonates the gain is significant under all three ECG references.</p>
-    <div class="panel">
-      <div class="seg" id="seg-acc"><button data-m="f1" class="on">F1</button><button data-m="hr">Heart-rate error</button><button data-m="rr">RR-interval error</button></div>
-      <div class="chart" id="c-acc"></div>
-      <p class="note" id="n-acc"></p>
-    </div>
-    <details><summary>Show the numbers</summary><div class="tbl" id="t-acc"></div></details>
-  </section>
+        <section id="stress">
+            <h2>Does the lead survive stress tests?</h2>
+            <p class="answer">Yes, on both axes. On the held-out set the gap widens as the matching window tightens to 75 ms, and it stays positive and significant when the analysis keeps only recordings whose three ECG references agree.</p>
+            <div class="panel">
+                <div class="seg" id="seg-str"><button data-m="tol" class="on">Tighter matching</button><button data-m="agr">Stricter reference agreement</button></div>
+                <div class="chart" id="c-str"></div>
+                <p class="note" id="n-str"></p>
+            </div>
+        </section>
 
-  <section id="stress">
-    <h2>Does the lead survive stress tests?</h2>
-    <p class="answer">Yes, on both axes. On the held-out set the gap widens as the matching window tightens to 75 ms, and it stays positive and significant when the analysis keeps only recordings whose three ECG references agree.</p>
-    <div class="panel">
-      <div class="seg" id="seg-str"><button data-m="tol" class="on">Tighter matching</button><button data-m="agr">Stricter reference agreement</button></div>
-      <div class="chart" id="c-str"></div>
-      <p class="note" id="n-str"></p>
-    </div>
-  </section>
+        <section id="hrv">
+            <h2>Is HRV ever worse?</h2>
+            <p class="answer">No. Computed end to end from each detector’s full beat series, extra and missed beats included, MinEl_PPG’s heart rate and HRV are never worse on any database and significantly better in 9 of 21 comparisons. On MIMIC Testing, SDNN error falls from 54.1 to 28.4 ms. On matched beats alone, interval timing is non-inferior in all 51 comparisons and superior in eleven, and none is worse; those against the Pan–Tompkins or annotation reference are shown below.</p>
+            <div class="panel">
+                <div class="seg" id="seg-hrv"><button data-m="SDNN" class="on">SDNN error</button><button data-m="RMSSD">RMSSD error</button><button data-m="RR RMSE">RR RMSE</button></div>
+                <div class="chart" id="c-hrv"></div>
+                <p class="note">Interval timing on matched beats. Median paired difference in absolute error (MinEl_PPG minus MSPTDfast) with bootstrap 95% CI, in sampling intervals (8 ms at 125 Hz, 3.3 ms at 300 Hz, 15.6 ms at 64 Hz); PT or annotation reference. Left of zero favours MinEl_PPG. The margin is two sampling intervals: each beat time is resolved to ±½ sample, so two detectors’ interval errors can differ by ±2 samples from rounding alone.</p>
+            </div>
+        </section>
 
-  <section id="hrv">
-    <h2>Is HRV ever worse?</h2>
-    <p class="answer">No. Computed end to end from each detector’s full beat series, extra and missed beats included, MinEl_PPG’s heart rate and HRV are never worse on any database and significantly better in 9 of 21 comparisons. On MIMIC Testing, SDNN error falls from 54.1 to 28.4 ms. On matched beats alone, interval timing is non-inferior in all 51 comparisons and superior in eleven, and none is worse; those against the Pan–Tompkins or annotation reference are shown below.</p>
-    <div class="panel">
-      <div class="seg" id="seg-hrv"><button data-m="SDNN" class="on">SDNN error</button><button data-m="RMSSD">RMSSD error</button><button data-m="RR RMSE">RR RMSE</button></div>
-      <div class="chart" id="c-hrv"></div>
-      <p class="note">Interval timing on matched beats. Median paired difference in absolute error (MinEl_PPG minus MSPTDfast) with bootstrap 95% CI, in sampling intervals (8 ms at 125 Hz, 3.3 ms at 300 Hz, 15.6 ms at 64 Hz); PT or annotation reference. Left of zero favours MinEl_PPG. The margin is two sampling intervals: each beat time is resolved to ±½ sample, so two detectors’ interval errors can differ by ±2 samples from rounding alone.</p>
-    </div>
-  </section>
+        <section id="motion">
+            <h2>Does it hold up in daily life?</h2>
+            <p class="answer">Yes, with one exception. On 36 h of wrist PPG, one of MSPTDfast’s own development sets, MinEl_PPG has higher median F1 in eight of nine activities (lower while driving, where the paired difference is level), lower median heart-rate error in six, recovers far more beats overall (22,552 vs 19,089 found by only one detector), and has lower RR-interval error (significant after correction) and lower SDNN and RMSSD error. With only 15 subjects, the overall per-subject F1 gain (0.615 vs 0.610) is not significant.</p>
+            <div class="panel">
+                <div class="seg" id="seg-mot"><button data-m="f1" class="on">F1</button><button data-m="hr">Heart-rate error</button></div>
+                <div class="chart" id="c-mot"></div>
+                <p class="note">PPG-DaLiA, 15 subjects; medians over subjects. Absolute scores are lower than published ppg-beats values for every detector alike, a difference of scoring harness; the comparison is meaningful in relative terms.</p>
+            </div>
+        </section>
 
-  <section id="motion">
-    <h2>Does it hold up in daily life?</h2>
-    <p class="answer">Yes, with one exception. On 36 h of wrist PPG, one of MSPTDfast’s own development sets, MinEl_PPG has higher median F1 in eight of nine activities (lower while driving, where the paired difference is level), lower median heart-rate error in six, recovers far more beats overall (22,552 vs 19,089 found by only one detector), and has lower RR-interval error (significant after correction) and lower SDNN and RMSSD error. With only 15 subjects, the overall per-subject F1 gain (0.615 vs 0.610) is not significant.</p>
-    <div class="panel">
-      <div class="seg" id="seg-mot"><button data-m="f1" class="on">F1</button><button data-m="hr">Heart-rate error</button></div>
-      <div class="chart" id="c-mot"></div>
-      <p class="note">PPG-DaLiA, 15 subjects; medians over subjects. Absolute scores are lower than published ppg-beats values for every detector alike, a difference of scoring harness; the comparison is meaningful in relative terms.</p>
-    </div>
-  </section>
+        <section id="why">
+            <h2>Where do the gains come from?</h2>
+            <p class="answer">Two places. The same detector fed a uniform 10 Hz stream loses timing, which each extremum’s own sample index restores. It also loses beats at neonatal rates, which no refinement restores and the min/max stream keeps.</p>
+            <div class="panel">
+                <div class="seg" id="seg-why"><button data-m="timing" class="on">Timing</button><button data-m="sens">Detection by heart rate</button></div>
+                <div class="chart" id="c-why"></div>
+                <p class="note" id="n-why"></p>
+            </div>
+        </section>
 
-  <section id="why">
-    <h2>Where do the gains come from?</h2>
-    <p class="answer">Two places. The same detector fed a uniform 10 Hz stream loses timing, which each extremum’s own sample index restores. It also loses beats at neonatal rates, which no refinement restores and the min/max stream keeps.</p>
-    <div class="panel">
-      <div class="seg" id="seg-why"><button data-m="timing" class="on">Timing</button><button data-m="sens">Detection by heart rate</button></div>
-      <div class="chart" id="c-why"></div>
-      <p class="note" id="n-why"></p>
-    </div>
-  </section>
+        <section id="cost">
+            <h2>What does it cost?</h2>
+            <p class="answer">5.8 to 52 times less compute than MSPTDfast in its benchmark pipeline on every database: 11–13× at 125 Hz, 52× at 300 Hz and 5.8× at 64 Hz, where MSPTDfast’s filters are cheapest. Even without that pipeline’s pre-filter, MSPTDfast is 3.8–5.0× slower and less accurate on the held-out set. The input is first reduced to about 30 Hz; after one filter and one min/max pass, every step sees ten values per second. Nothing is lost in timing: interval timing on matched beats is non-inferior on every database, including CapnoBase, where the input is reduced tenfold. Compiled in C on one laptop (Apple M1 Max, 10 cores), it processes 4.9 million seconds of PPG every second in its benchmark pipeline. On no database is MSPTDfast both more accurate and cheaper: MinEl_PPG is faster everywhere, and more accurate or level in F1 on every database.</p>
+            <div class="panel">
+                <div class="chart" id="c-cost"></div>
+                <p class="note">Real-time factor (signal duration divided by CPU time), log scale. Both detectors are timed from raw PPG to final beat times, including all filtering and post-processing; MATLAB, minimum of three runs per recording.</p>
+            </div>
+        </section>
 
-  <section id="cost">
-    <h2>What does it cost?</h2>
-    <p class="answer">5.8 to 52 times less compute than MSPTDfast in its benchmark pipeline on every database: 11–13× at 125 Hz, 52× at 300 Hz and 5.8× at 64 Hz, where MSPTDfast’s filters are cheapest. Even without that pipeline’s pre-filter, MSPTDfast is 3.8–5.0× slower and less accurate on the held-out set. The input is first reduced to about 30 Hz; after one filter and one min/max pass, every step sees ten values per second. Nothing is lost in timing: interval timing on matched beats is non-inferior on every database, including CapnoBase, where the input is reduced tenfold. Compiled in C on one laptop (Apple M1 Max, 10 cores), it processes 4.9 million seconds of PPG every second: about 70 such laptops could keep up with the whole US population, against about 6,700 for MSPTDfast in its benchmark pipeline, 79 for its bare detector without any filter and 109 with the same simple band-pass. On no database is MSPTDfast both more accurate and cheaper: MinEl_PPG is faster everywhere, and more accurate or level in F1 on every database.</p>
-    <div class="panel"><div class="chart" id="c-cost"></div>
-      <p class="note">Real-time factor (signal duration divided by CPU time), log scale. Both detectors are timed from raw PPG to final beat times, including all filtering and post-processing; MATLAB, minimum of three runs per recording.</p></div>
-  </section>
+        <section id="limits">
+            <h2>Where does it fall short?</h2>
+            <p class="answer">One trade-off qualifies the results.</p>
+            <ul class="checks">
+                <li><strong>Atrial fibrillation.</strong> MinEl_PPG trades a few weak early beats for fewer false detections. F1 is level (0.820 vs 0.824; 0.755 vs 0.759 in the AF recordings) and its paired PPV is higher, but MSPTDfast recovers more beats when pooled (1,698 vs 1,513 found only by one). The difference arrives early, at 0.6–1.0 of the local median RR (628 vs 443): the weak early pulses of AF. Per recording it is small: on beats all three ECG references confirm, AF sensitivity is 0.710 vs 0.715 (p = 0.10), and AF screening from either detector’s beats is identical (AUROC 0.938).</li>
+            </ul>
+        </section>
 
-  <section id="limits">
-    <h2>Where does it fall short?</h2>
-    <p class="answer">One trade-off qualifies the results.</p>
-    <ul class="checks">
-      <li><strong>Atrial fibrillation.</strong> MinEl_PPG trades a few weak early beats for fewer false detections. F1 is level (0.820 vs 0.824; 0.755 vs 0.759 in the AF recordings) and its paired PPV is higher, but MSPTDfast recovers more beats when pooled (1,698 vs 1,513 found only by one). The difference arrives early, at 0.6–1.0 of the local median RR (628 vs 443): the weak early pulses of AF. Per recording it is small: on beats all three ECG references confirm, AF sensitivity is 0.710 vs 0.715 (p = 0.10), and AF screening from either detector’s beats is identical (AUROC 0.938).</li>
-    </ul>
-  </section>
+        <section id="checks">
+            <h2>Could the comparison favour MinEl_PPG?</h2>
+            <p class="answer">The design works against that.</p>
+            <ul class="checks">
+                <li><strong>The comparator’s own pipeline.</strong> MSPTDfast runs through the ppg-beats pre-filter, onset–peak tidying and mid-amplitude fiducial, the configuration its authors benchmark; every arm processes whole recordings. A common pre-filter would favour whichever detector was tuned with it.</li>
+                <li><strong>Held-out data.</strong> The primary analysis uses 796 recordings from 111 patients unseen by either method, with patients shared with other sets removed.</li>
+                <li><strong>Independent reference.</strong> Primary claims rest on Pan–Tompkins, which shares no code with MinEl_PPG. Two further ECG references give the same ranking.</li>
+                <li><strong>Home ground.</strong> Four of the seven databases were used to develop MSPTDfast.</li>
+                <li><strong>Equal timing rules.</strong> Both detectors are charged for every step from raw PPG to beat times.</li>
+            </ul>
+        </section>
+    </main>
 
-  <section id="checks">
-    <h2>Could the comparison favour MinEl_PPG?</h2>
-    <p class="answer">The design works against that.</p>
-    <ul class="checks">
-      <li><strong>The comparator’s own pipeline.</strong> MSPTDfast runs through the ppg-beats pre-filter, onset–peak tidying and mid-amplitude fiducial, the configuration its authors benchmark; every arm processes whole recordings. A common pre-filter would favour whichever detector was tuned with it.</li>
-      <li><strong>Held-out data.</strong> The primary analysis uses 796 recordings from 111 patients unseen by either method, with patients shared with other sets removed.</li>
-      <li><strong>Independent reference.</strong> Primary claims rest on Pan–Tompkins, which shares no code with MinEl_PPG. Two further ECG references give the same ranking.</li>
-      <li><strong>Home ground.</strong> Four of the seven databases were used to develop MSPTDfast.</li>
-      <li><strong>Equal timing rules.</strong> Both detectors are charged for every step from raw PPG to beat times.</li>
-    </ul>
-  </section>
-</main>
+    <footer>
+        <div class="wrap">Titus Jayarathna, The MARCS Institute, Western Sydney University. Databases: MIMIC PERform (Large Testing, Testing, Training, AF), BIDMC, CapnoBase, PPG-DaLiA. Matching tolerance 0.15 s after per-recording offset removal unless stated. All values are medians, across recordings or, on the held-out set, across patients; effects are median paired differences.</div>
+    </footer>
 
-<footer><div class="wrap">Titus Jayarathna, The MARCS Institute, Western Sydney University. Databases: MIMIC PERform (Large Testing, Testing, Training, AF), BIDMC, CapnoBase, PPG-DaLiA. Matching tolerance 0.15 s after per-recording offset removal unless stated. All values are medians, across recordings or, on the held-out set, across patients; effects are median paired differences.</div></footer>
+    <script>
+        /* ---------------- data: benchmark run of 28 Oct 2026 (30 Hz decimation floor) ---------------- */
+        const HERO = {
+            "fs": 125,
+            "d": [-0.188, -0.129, -0.076, -0.029, 0.01, 0.041, 0.065, 0.082, 0.095, 0.104, 0.108, 0.103, 0.085, 0.058, 0.029, 0.0, -0.027, -0.05, -0.071, -0.088, -0.102, -0.113, -0.122, -0.129, -0.135, -0.139, -0.141, -0.142, -0.141, -0.138, -0.132, -0.124, -0.113, -0.098, -0.08, -0.058, -0.032, -0.001, 0.037, 0.08, 0.129, 0.185, 0.249, 0.319, 0.397, 0.478, 0.559, 0.64, 0.715, 0.777, 0.818, 0.832, 0.817, 0.772, 0.699, 0.603, 0.49, 0.365, 0.236, 0.107, -0.018, -0.135, -0.244, -0.342, -0.429, -0.502, -0.561, -0.605, -0.633, -0.645, -0.642, -0.626, -0.599, -0.565, -0.523, -0.474, -0.42, -0.362, -0.304, -0.247, -0.193, -0.145, -0.102, -0.067, -0.039, -0.017, -0.003, 0.004, 0.006, 0.003, -0.004, -0.015, -0.028, -0.043, -0.058, -0.072, -0.087, -0.102, -0.117, -0.13, -0.142, -0.152, -0.161, -0.167, -0.171, -0.171, -0.168, -0.161, -0.149, -0.134, -0.116, -0.093, -0.065, -0.031, 0.01, 0.06, 0.118, 0.185, 0.261, 0.346, 0.439, 0.538, 0.639, 0.737, 0.824, 0.893, 0.935, 0.948, 0.928, 0.876, 0.796, 0.693, 0.572, 0.442, 0.309, 0.179, 0.053, -0.065, -0.175, -0.275, -0.363, -0.439, -0.502, -0.55, -0.585, -0.606, -0.615, -0.615, -0.603, -0.579, -0.544, -0.499, -0.447, -0.39, -0.332, -0.274, -0.219, -0.17, -0.126, -0.089, -0.059, -0.036, -0.021, -0.011, -0.006, -0.004, -0.006, -0.01, -0.018, -0.028, -0.039, -0.053, -0.069, -0.085, -0.101, -0.116, -0.129, -0.14, -0.148, -0.155, -0.159, -0.16, -0.158, -0.153, -0.146, -0.136, -0.122, -0.104, -0.08, -0.05, -0.012, 0.032, 0.084, 0.143, 0.211, 0.289, 0.375, 0.47, 0.57, 0.673, 0.77, 0.855, 0.919, 0.957, 0.963, 0.935, 0.875, 0.786, 0.675, 0.55, 0.42, 0.289, 0.158, 0.032, -0.087, -0.197, -0.296, -0.384, -0.46, -0.522, -0.572, -0.611, -0.64, -0.657, -0.66, -0.649, -0.625, -0.589, -0.542, -0.487, -0.428, -0.366, -0.305, -0.247, -0.194, -0.149, -0.111, -0.08, -0.057, -0.04, -0.03, -0.025, -0.024, -0.028, -0.033, -0.04, -0.048, -0.056, -0.065, -0.074, -0.082, -0.089, -0.096, -0.102, -0.108, -0.113, -0.117, -0.12, -0.121, -0.121, -0.121, -0.117, -0.11, -0.097, -0.078, -0.053, -0.023, 0.01, 0.044, 0.082, 0.126, 0.177, 0.238, 0.307, 0.387, 0.477, 0.574, 0.674, 0.772, 0.861, 0.934, 0.982, 1.0, 0.986, 0.946, 0.884, 0.799, 0.692, 0.567, 0.43, 0.288, 0.146, 0.009, -0.118, -0.234, -0.337, -0.428, -0.507, -0.575, -0.63, -0.67, -0.695, -0.703, -0.695, -0.672, -0.633, -0.583, -0.524, -0.459, -0.393, -0.327, -0.264, -0.206, -0.152, -0.105, -0.065, -0.033, -0.008, 0.009, 0.02, 0.025, 0.024, 0.018, 0.008, -0.005, -0.021, -0.038, -0.056, -0.074, -0.091, -0.107, -0.12, -0.131, -0.141, -0.149, -0.156, -0.161, -0.164, -0.164, -0.162, -0.157, -0.15, -0.139, -0.125, -0.106, -0.084, -0.058, -0.028, 0.007, 0.049, 0.096, 0.15, 0.21, 0.276, 0.349, 0.426, 0.508, 0.591, 0.675, 0.757, 0.828, 0.881, 0.909, 0.907, 0.875, 0.812, 0.722, 0.609, 0.481, 0.343, 0.203, 0.065, -0.066, -0.188, -0.3],
+            "mm": [0, 10, 27, 49, 51, 69, 75, 88, 105, 124, 127, 146, 150, 165, 181, 199, 204, 224, 225, 242, 259, 274, 282, 299, 302, 320, 338, 349, 362, 374],
+            "uni": [
+                [0.0, -0.198],
+                [0.1, 0.065],
+                [0.2, -0.149],
+                [0.3, 0.032],
+                [0.4, 0.732],
+                [0.5, -0.232],
+                [0.6, -0.504],
+                [0.7, 0.024],
+                [0.8, -0.151],
+                [0.9, -0.043],
+                [1.0, 0.811],
+                [1.1, -0.051],
+                [1.2, -0.559],
+                [1.3, -0.007],
+                [1.4, -0.103],
+                [1.5, -0.121],
+                [1.6, 0.758],
+                [1.7, 0.163],
+                [1.8, -0.657],
+                [1.9, -0.078],
+                [2.0, -0.063],
+                [2.1, -0.14],
+                [2.2, 0.564],
+                [2.3, 0.613],
+                [2.4, -0.679],
+                [2.5, -0.187],
+                [2.6, -0.015],
+                [2.7, -0.173],
+                [2.8, 0.122],
+                [2.9, 0.812]
+            ]
+        };
+        const HEAD = {
+            held: {
+                lo: .940,
+                hi: .970,
+                unit: "F1 (median across patients)",
+                pts: [{
+                        n: "MinEl_PPG",
+                        k: "u",
+                        rtf: 83300,
+                        f1: .961,
+                        right: 1
+                    }, {
+                        n: "PLAINREF",
+                        k: "gs",
+                        rtf: 42300,
+                        f1: .960,
+                        dy: -12
+                    },
+                    {
+                        n: "PLAIN",
+                        k: "gc",
+                        rtf: 43100,
+                        f1: .959,
+                        dy: 14
+                    }, {
+                        n: "MSPTDfast",
+                        k: "m",
+                        rtf: 6300,
+                        f1: .949
+                    }
+                ],
+                note: "Median F1 across the 111 held-out patients, PT reference. PLAIN and PLAINREF are the same detector given a uniform 10 Hz stream, without and with native-rate refinement. PLAINREF already beats MSPTDfast (0.960 vs 0.949, significant after correction): the decision logic alone outperforms the benchmark."
+            },
+            neo: {
+                lo: .810,
+                hi: .870,
+                unit: "F1 (median across recordings)",
+                pts: [{
+                        n: "MinEl_PPG",
+                        k: "u",
+                        rtf: 102600,
+                        f1: .866
+                    }, {
+                        n: "PLAINREF",
+                        k: "gs",
+                        rtf: 84100,
+                        f1: .834,
+                        dy: -12
+                    },
+                    {
+                        n: "PLAIN",
+                        k: "gc",
+                        rtf: 85100,
+                        f1: .828,
+                        dy: 14
+                    }, {
+                        n: "MSPTDfast",
+                        k: "m",
+                        rtf: 9900,
+                        f1: .841
+                    }
+                ],
+                note: "Neonates in MIMIC Testing (120–180 bpm). Both uniform arms fall 0.03–0.04 below MinEl_PPG in median F1, and below MSPTDfast: at neonatal rates the anti-aliasing a uniform stream needs blunts the brief upstroke, and the min/max stream keeps it."
+            }
+        };
+        const DB = [{
+                n: "Held-out (Large Testing)",
+                f1: [.983, .969],
+                hr: [.124, .135],
+                rr: [9, 9],
+                s: 1,
+                rtf: [83.3, 6.3]
+            },
+            {
+                n: "MIMIC Testing",
+                f1: [.909, .890],
+                hr: [.301, .331],
+                rr: [51, 59],
+                s: 1,
+                rtf: [117.8, 10.3]
+            },
+            {
+                n: "· adults",
+                f1: [.947, .944],
+                hr: [.083, .111],
+                rr: [24, 24],
+                s: 1
+            },
+            {
+                n: "· neonates",
+                f1: [.866, .841],
+                hr: [.719, .749],
+                rr: [86, 106],
+                s: 1
+            },
+            {
+                n: "MIMIC Training (dev)",
+                f1: [.911, .900],
+                hr: [.306, .296],
+                rr: [53, 62],
+                s: 1,
+                rtf: [117.5, 10.3]
+            },
+            {
+                n: "MIMIC AF",
+                f1: [.820, .824],
+                hr: [.179, .236],
+                rr: [76, 73],
+                s: 0,
+                rtf: [142.2, 10.9]
+            },
+            {
+                n: "BIDMC (dev)",
+                f1: [.987, .985],
+                hr: [.054, .041],
+                rr: [8, 9],
+                s: 0,
+                rtf: [136.0, 10.6]
+            },
+            {
+                n: "CapnoBase (dev)",
+                f1: [.999, .998],
+                hr: [.054, .044],
+                rr: [9, 9],
+                s: 0,
+                rtf: [139.3, 2.6]
+            },
+            {
+                n: "PPG-DaLiA (dev)",
+                f1: [.615, .610],
+                hr: [.593, .808],
+                rr: [95, 111],
+                s: 0,
+                rtf: [104.2, 17.9]
+            }
+        ];
+        const COST = [{
+                n: "CapnoBase (300 Hz)",
+                c: [0.145, 7.608],
+                h: 5.6
+            }, {
+                n: "Held-out (125 Hz)",
+                c: [0.306, 4.017],
+                h: 7.07
+            },
+            {
+                n: "MIMIC AF (125 Hz)",
+                c: [0.295, 3.867],
+                h: 11.66
+            }, {
+                n: "BIDMC (125 Hz)",
+                c: [0.187, 2.397],
+                h: 7.07
+            },
+            {
+                n: "MIMIC Training (125 Hz)",
+                c: [1.021, 11.697],
+                h: 33.33
+            }, {
+                n: "MIMIC Testing (125 Hz)",
+                c: [1.018, 11.628],
+                h: 33.33
+            },
+            {
+                n: "PPG-DaLiA (64 Hz)",
+                c: [1.243, 7.224],
+                h: 35.97
+            }
+        ];
+        const STR = {
+            tol: {
+                x: ["150 ms", "100 ms", "75 ms"],
+                unit: "Matching tolerance",
+                series: [{
+                        n: "Held-out (patients)",
+                        c: "var(--teal)",
+                        v: [.012, .018, .022]
+                    }, {
+                        n: "Testing, adults",
+                        c: "var(--ink)",
+                        v: [.003, .005, .014]
+                    },
+                    {
+                        n: "Training",
+                        c: "var(--grey)",
+                        v: [.011, .019, .020]
+                    }, {
+                        n: "Testing, neonates",
+                        c: "var(--muted)",
+                        v: [.025, .028, .012]
+                    }
+                ],
+                note: "Difference in median F1 (MinEl_PPG minus MSPTDfast), PT reference. At 75 ms, a fraction of a neonatal heartbeat, the gap is larger than at 150 ms on the held-out set, in Testing adults and in Training (five of the eight cohorts overall). In Testing neonates it narrows from 0.025 to 0.012 but stays significant; it is level on CapnoBase and PPG-DaLiA. On the held-out set it is significant at every tolerance."
+            },
+            agr: {
+                x: ["All", "≤20%", "≤15%", "≤10%", "≤5%"],
+                unit: "Recordings kept: three ECG references agree on beat count within",
+                sub: ["n=200", "n=162", "n=152", "n=138", "n=122"],
+                series: [{
+                    n: "MIMIC Testing",
+                    c: "var(--teal)",
+                    v: [.005, .005, .004, .004, .003]
+                }, {
+                    n: "MIMIC Training",
+                    c: "var(--grey)",
+                    v: [.003, .003, .003, .002, .001]
+                }],
+                note: "Median paired F1 gain over MSPTDfast as the analysis keeps only recordings whose three ECG references agree (n = Testing recordings kept). The gain stays positive as the references become more trustworthy, and every point is significant (p ≤ 2 × 10⁻⁴). Noisy references are not what produces the lead."
+            }
+        };
+        const HRV = [ // [median, lo, hi] in ms; per = sampling interval (ms); sup = superior
+            ["Held-out", "SDNN", 8, .01, -.38, .21, 0],
+            ["Held-out", "RMSSD", 8, -.03, -.76, .47, 0],
+            ["Held-out", "RR RMSE", 8, -.07, -.36, .11, 0],
+            ["MIMIC Testing", "SDNN", 8, -.04, -.40, .28, 0],
+            ["MIMIC Testing", "RMSSD", 8, -.45, -1.72, .23, 0],
+            ["MIMIC Testing", "RR RMSE", 8, -1.63, -3.42, -.40, 1],
+            ["MIMIC Training", "SDNN", 8, -.42, -1.50, -.12, 1],
+            ["MIMIC Training", "RMSSD", 8, -1.30, -2.94, -.68, 1],
+            ["MIMIC Training", "RR RMSE", 8, -1.87, -4.96, -.49, 1],
+            ["MIMIC AF", "SDNN", 8, .19, -.32, 1.77, 0],
+            ["MIMIC AF", "RMSSD", 8, -.20, -2.52, 1.22, 0],
+            ["MIMIC AF", "RR RMSE", 8, -.61, -4.39, .31, 0],
+            ["BIDMC", "SDNN", 8, -.00, -.33, .25, 0],
+            ["BIDMC", "RMSSD", 8, .01, -.66, .51, 0],
+            ["BIDMC", "RR RMSE", 8, .09, -.35, .23, 0],
+            ["CapnoBase", "SDNN", 3.333, -.06, -.17, .00, 0],
+            ["CapnoBase", "RMSSD", 3.333, -.11, -.30, .03, 0],
+            ["CapnoBase", "RR RMSE", 3.333, -.01, -.10, .14, 0],
+            ["PPG-DaLiA", "SDNN", 15.625, -1.03, -1.51, .79, 0],
+            ["PPG-DaLiA", "RMSSD", 15.625, -.55, -4.19, 8.71, 0],
+            ["PPG-DaLiA", "RR RMSE", 15.625, -9.26, -22.53, -8.42, 1]
+        ].map(([n, m, per, md, lo, hi, sup]) => ({
+            n,
+            m,
+            per,
+            md,
+            lo,
+            hi,
+            sup
+        }));
+        const ACT = [{
+                n: "Sitting",
+                f1: [.826, .756],
+                hr: [0.05, 0.10]
+            }, {
+                n: "Cycling",
+                f1: [.805, .775],
+                hr: [0.44, 0.90]
+            },
+            {
+                n: "Working",
+                f1: [.726, .713],
+                hr: [0.24, 0.26]
+            }, {
+                n: "Walking",
+                f1: [.744, .700],
+                hr: [1.09, 1.95]
+            },
+            {
+                n: "Driving",
+                f1: [.575, .620],
+                hr: [0.55, 0.44]
+            }, {
+                n: "Lunch",
+                f1: [.596, .588],
+                hr: [0.61, 0.69]
+            },
+            {
+                n: "Stairs",
+                f1: [.645, .642],
+                hr: [2.55, 1.70]
+            }, {
+                n: "Transitions",
+                f1: [.630, .594],
+                hr: [0.90, 1.29]
+            },
+            {
+                n: "Table soccer",
+                f1: [.605, .563],
+                hr: [1.85, 1.33]
+            }
+        ];
+        const WHY = {
+            timing: [{
+                g: "MIMIC Testing",
+                v: [29.6, 81.7, 82.2]
+            }, {
+                g: "Held-out",
+                v: [39.1, 80.2, 81.6]
+            }],
+            sens: [{
+                    n: "Testing adults",
+                    d: .010,
+                    neo: 0
+                }, {
+                    n: "Training adults",
+                    d: .009,
+                    neo: 0
+                }, {
+                    n: "Held-out",
+                    d: .006,
+                    neo: 0
+                },
+                {
+                    n: "Training neonates",
+                    d: .041,
+                    neo: 1
+                }, {
+                    n: "Testing neonates",
+                    d: .049,
+                    neo: 1
+                }
+            ]
+        };
 
-<script>
-/* ---------------- data: benchmark run of 28 Oct 2026 (30 Hz decimation floor) ---------------- */
-const HERO = {"fs": 125, "d": [-0.188, -0.129, -0.076, -0.029, 0.01, 0.041, 0.065, 0.082, 0.095, 0.104, 0.108, 0.103, 0.085, 0.058, 0.029, 0.0, -0.027, -0.05, -0.071, -0.088, -0.102, -0.113, -0.122, -0.129, -0.135, -0.139, -0.141, -0.142, -0.141, -0.138, -0.132, -0.124, -0.113, -0.098, -0.08, -0.058, -0.032, -0.001, 0.037, 0.08, 0.129, 0.185, 0.249, 0.319, 0.397, 0.478, 0.559, 0.64, 0.715, 0.777, 0.818, 0.832, 0.817, 0.772, 0.699, 0.603, 0.49, 0.365, 0.236, 0.107, -0.018, -0.135, -0.244, -0.342, -0.429, -0.502, -0.561, -0.605, -0.633, -0.645, -0.642, -0.626, -0.599, -0.565, -0.523, -0.474, -0.42, -0.362, -0.304, -0.247, -0.193, -0.145, -0.102, -0.067, -0.039, -0.017, -0.003, 0.004, 0.006, 0.003, -0.004, -0.015, -0.028, -0.043, -0.058, -0.072, -0.087, -0.102, -0.117, -0.13, -0.142, -0.152, -0.161, -0.167, -0.171, -0.171, -0.168, -0.161, -0.149, -0.134, -0.116, -0.093, -0.065, -0.031, 0.01, 0.06, 0.118, 0.185, 0.261, 0.346, 0.439, 0.538, 0.639, 0.737, 0.824, 0.893, 0.935, 0.948, 0.928, 0.876, 0.796, 0.693, 0.572, 0.442, 0.309, 0.179, 0.053, -0.065, -0.175, -0.275, -0.363, -0.439, -0.502, -0.55, -0.585, -0.606, -0.615, -0.615, -0.603, -0.579, -0.544, -0.499, -0.447, -0.39, -0.332, -0.274, -0.219, -0.17, -0.126, -0.089, -0.059, -0.036, -0.021, -0.011, -0.006, -0.004, -0.006, -0.01, -0.018, -0.028, -0.039, -0.053, -0.069, -0.085, -0.101, -0.116, -0.129, -0.14, -0.148, -0.155, -0.159, -0.16, -0.158, -0.153, -0.146, -0.136, -0.122, -0.104, -0.08, -0.05, -0.012, 0.032, 0.084, 0.143, 0.211, 0.289, 0.375, 0.47, 0.57, 0.673, 0.77, 0.855, 0.919, 0.957, 0.963, 0.935, 0.875, 0.786, 0.675, 0.55, 0.42, 0.289, 0.158, 0.032, -0.087, -0.197, -0.296, -0.384, -0.46, -0.522, -0.572, -0.611, -0.64, -0.657, -0.66, -0.649, -0.625, -0.589, -0.542, -0.487, -0.428, -0.366, -0.305, -0.247, -0.194, -0.149, -0.111, -0.08, -0.057, -0.04, -0.03, -0.025, -0.024, -0.028, -0.033, -0.04, -0.048, -0.056, -0.065, -0.074, -0.082, -0.089, -0.096, -0.102, -0.108, -0.113, -0.117, -0.12, -0.121, -0.121, -0.121, -0.117, -0.11, -0.097, -0.078, -0.053, -0.023, 0.01, 0.044, 0.082, 0.126, 0.177, 0.238, 0.307, 0.387, 0.477, 0.574, 0.674, 0.772, 0.861, 0.934, 0.982, 1.0, 0.986, 0.946, 0.884, 0.799, 0.692, 0.567, 0.43, 0.288, 0.146, 0.009, -0.118, -0.234, -0.337, -0.428, -0.507, -0.575, -0.63, -0.67, -0.695, -0.703, -0.695, -0.672, -0.633, -0.583, -0.524, -0.459, -0.393, -0.327, -0.264, -0.206, -0.152, -0.105, -0.065, -0.033, -0.008, 0.009, 0.02, 0.025, 0.024, 0.018, 0.008, -0.005, -0.021, -0.038, -0.056, -0.074, -0.091, -0.107, -0.12, -0.131, -0.141, -0.149, -0.156, -0.161, -0.164, -0.164, -0.162, -0.157, -0.15, -0.139, -0.125, -0.106, -0.084, -0.058, -0.028, 0.007, 0.049, 0.096, 0.15, 0.21, 0.276, 0.349, 0.426, 0.508, 0.591, 0.675, 0.757, 0.828, 0.881, 0.909, 0.907, 0.875, 0.812, 0.722, 0.609, 0.481, 0.343, 0.203, 0.065, -0.066, -0.188, -0.3], "mm": [0, 10, 27, 49, 51, 69, 75, 88, 105, 124, 127, 146, 150, 165, 181, 199, 204, 224, 225, 242, 259, 274, 282, 299, 302, 320, 338, 349, 362, 374], "uni": [[0.0, -0.198], [0.1, 0.065], [0.2, -0.149], [0.3, 0.032], [0.4, 0.732], [0.5, -0.232], [0.6, -0.504], [0.7, 0.024], [0.8, -0.151], [0.9, -0.043], [1.0, 0.811], [1.1, -0.051], [1.2, -0.559], [1.3, -0.007], [1.4, -0.103], [1.5, -0.121], [1.6, 0.758], [1.7, 0.163], [1.8, -0.657], [1.9, -0.078], [2.0, -0.063], [2.1, -0.14], [2.2, 0.564], [2.3, 0.613], [2.4, -0.679], [2.5, -0.187], [2.6, -0.015], [2.7, -0.173], [2.8, 0.122], [2.9, 0.812]]};
-const HEAD = {
-  held: { lo: .940, hi: .970, unit: "F1 (median across patients)", pts: [
-    { n: "MinEl_PPG", k: "u", rtf: 83300, f1: .961, right: 1 }, { n: "PLAINREF", k: "gs", rtf: 42300, f1: .960, dy: -12 },
-    { n: "PLAIN", k: "gc", rtf: 43100, f1: .959, dy: 14 }, { n: "MSPTDfast", k: "m", rtf: 6300, f1: .949 } ],
-    note: "Median F1 across the 111 held-out patients, PT reference. PLAIN and PLAINREF are the same detector given a uniform 10 Hz stream, without and with native-rate refinement. PLAINREF already beats MSPTDfast (0.960 vs 0.949, significant after correction): the decision logic alone outperforms the benchmark." },
-  neo: { lo: .810, hi: .870, unit: "F1 (median across recordings)", pts: [
-    { n: "MinEl_PPG", k: "u", rtf: 102600, f1: .866 }, { n: "PLAINREF", k: "gs", rtf: 84100, f1: .834, dy: -12 },
-    { n: "PLAIN", k: "gc", rtf: 85100, f1: .828, dy: 14 }, { n: "MSPTDfast", k: "m", rtf: 9900, f1: .841 } ],
-    note: "Neonates in MIMIC Testing (120–180 bpm). Both uniform arms fall 0.03–0.04 below MinEl_PPG in median F1, and below MSPTDfast: at neonatal rates the anti-aliasing a uniform stream needs blunts the brief upstroke, and the min/max stream keeps it." }
-};
-const DB = [
-  { n: "Held-out (Large Testing)", f1: [.983,.969], hr: [.124,.135], rr: [9,9],    s: 1, rtf: [83.3,6.3] },
-  { n: "MIMIC Testing",            f1: [.909,.890], hr: [.301,.331], rr: [51,59],  s: 1, rtf: [117.8,10.3] },
-  { n: "· adults",                 f1: [.947,.944], hr: [.083,.111], rr: [24,24],  s: 1 },
-  { n: "· neonates",               f1: [.866,.841], hr: [.719,.749], rr: [86,106], s: 1 },
-  { n: "MIMIC Training (dev)",     f1: [.911,.900], hr: [.306,.296], rr: [53,62],  s: 1, rtf: [117.5,10.3] },
-  { n: "MIMIC AF",                 f1: [.820,.824], hr: [.179,.236], rr: [76,73],  s: 0, rtf: [142.2,10.9] },
-  { n: "BIDMC (dev)",              f1: [.987,.985], hr: [.054,.041], rr: [8,9],    s: 0, rtf: [136.0,10.6] },
-  { n: "CapnoBase (dev)",          f1: [.999,.998], hr: [.054,.044], rr: [9,9],    s: 0, rtf: [139.3,2.6] },
-  { n: "PPG-DaLiA (dev)",          f1: [.615,.610], hr: [.593,.808], rr: [95,111], s: 0, rtf: [104.2,17.9] }
-];
-const COST = [
-  { n: "CapnoBase (300 Hz)", c: [0.145, 7.608], h: 5.6 }, { n: "Held-out (125 Hz)", c: [0.306, 4.017], h: 7.07 },
-  { n: "MIMIC AF (125 Hz)", c: [0.295, 3.867], h: 11.66 }, { n: "BIDMC (125 Hz)", c: [0.187, 2.397], h: 7.07 },
-  { n: "MIMIC Training (125 Hz)", c: [1.021, 11.697], h: 33.33 }, { n: "MIMIC Testing (125 Hz)", c: [1.018, 11.628], h: 33.33 },
-  { n: "PPG-DaLiA (64 Hz)", c: [1.243, 7.224], h: 35.97 }
-];
-const STR = {
-  tol: { x: ["150 ms", "100 ms", "75 ms"], unit: "Matching tolerance", series: [
-    { n: "Held-out (patients)", c: "var(--teal)", v: [.012,.018,.022] }, { n: "Testing, adults", c: "var(--ink)", v: [.003,.005,.014] },
-    { n: "Training", c: "var(--grey)", v: [.011,.019,.020] }, { n: "Testing, neonates", c: "var(--muted)", v: [.025,.028,.012] } ],
-    note: "Difference in median F1 (MinEl_PPG minus MSPTDfast), PT reference. At 75 ms, a fraction of a neonatal heartbeat, the gap is larger than at 150 ms on the held-out set, in Testing adults and in Training (five of the eight cohorts overall). In Testing neonates it narrows from 0.025 to 0.012 but stays significant; it is level on CapnoBase and PPG-DaLiA. On the held-out set it is significant at every tolerance." },
-  agr: { x: ["All", "≤20%", "≤15%", "≤10%", "≤5%"], unit: "Recordings kept: three ECG references agree on beat count within", sub: ["n=200","n=162","n=152","n=138","n=122"], series: [
-    { n: "MIMIC Testing", c: "var(--teal)", v: [.005,.005,.004,.004,.003] }, { n: "MIMIC Training", c: "var(--grey)", v: [.003,.003,.003,.002,.001] } ],
-    note: "Median paired F1 gain over MSPTDfast as the analysis keeps only recordings whose three ECG references agree (n = Testing recordings kept). The gain stays positive as the references become more trustworthy, and every point is significant (p ≤ 2 × 10⁻⁴). Noisy references are not what produces the lead." }
-};
-const HRV = [ // [median, lo, hi] in ms; per = sampling interval (ms); sup = superior
-  ["Held-out", "SDNN", 8, .01, -.38, .21, 0], ["Held-out", "RMSSD", 8, -.03, -.76, .47, 0], ["Held-out", "RR RMSE", 8, -.07, -.36, .11, 0],
-  ["MIMIC Testing", "SDNN", 8, -.04, -.40, .28, 0], ["MIMIC Testing", "RMSSD", 8, -.45, -1.72, .23, 0], ["MIMIC Testing", "RR RMSE", 8, -1.63, -3.42, -.40, 1],
-  ["MIMIC Training", "SDNN", 8, -.42, -1.50, -.12, 1], ["MIMIC Training", "RMSSD", 8, -1.30, -2.94, -.68, 1], ["MIMIC Training", "RR RMSE", 8, -1.87, -4.96, -.49, 1],
-  ["MIMIC AF", "SDNN", 8, .19, -.32, 1.77, 0], ["MIMIC AF", "RMSSD", 8, -.20, -2.52, 1.22, 0], ["MIMIC AF", "RR RMSE", 8, -.61, -4.39, .31, 0],
-  ["BIDMC", "SDNN", 8, -.00, -.33, .25, 0], ["BIDMC", "RMSSD", 8, .01, -.66, .51, 0], ["BIDMC", "RR RMSE", 8, .09, -.35, .23, 0],
-  ["CapnoBase", "SDNN", 3.333, -.06, -.17, .00, 0], ["CapnoBase", "RMSSD", 3.333, -.11, -.30, .03, 0], ["CapnoBase", "RR RMSE", 3.333, -.01, -.10, .14, 0],
-  ["PPG-DaLiA", "SDNN", 15.625, -1.03, -1.51, .79, 0], ["PPG-DaLiA", "RMSSD", 15.625, -.55, -4.19, 8.71, 0], ["PPG-DaLiA", "RR RMSE", 15.625, -9.26, -22.53, -8.42, 1]
-].map(([n, m, per, md, lo, hi, sup]) => ({ n, m, per, md, lo, hi, sup }));
-const ACT = [
-  { n: "Sitting", f1: [.826,.756], hr: [0.05,0.10] }, { n: "Cycling", f1: [.805,.775], hr: [0.44,0.90] },
-  { n: "Working", f1: [.726,.713], hr: [0.24,0.26] }, { n: "Walking", f1: [.744,.700], hr: [1.09,1.95] },
-  { n: "Driving", f1: [.575,.620], hr: [0.55,0.44] }, { n: "Lunch", f1: [.596,.588], hr: [0.61,0.69] },
-  { n: "Stairs", f1: [.645,.642], hr: [2.55,1.70] }, { n: "Transitions", f1: [.630,.594], hr: [0.90,1.29] },
-  { n: "Table soccer", f1: [.605,.563], hr: [1.85,1.33] }
-];
-const WHY = {
-  timing: [ { g: "MIMIC Testing", v: [29.6, 81.7, 82.2] }, { g: "Held-out", v: [39.1, 80.2, 81.6] } ],
-  sens: [ { n: "Testing adults", d: .010, neo: 0 }, { n: "Training adults", d: .009, neo: 0 }, { n: "Held-out", d: .006, neo: 0 },
-          { n: "Training neonates", d: .041, neo: 1 }, { n: "Testing neonates", d: .049, neo: 1 } ]
-};
+        /* ---------------- SVG helpers ---------------- */
+        const W = 720;
+        const $ = id => document.getElementById(id);
+        const svg = (h, inner, label) => `<svg viewBox="0 0 ${W} ${h}" role="img" aria-label="${label}">${inner}</svg>`;
+        const txt = (x, y, s, cls = "", anchor = "start", extra = "") => `<text x="${x}" y="${y}" class="${cls}" text-anchor="${anchor}" dominant-baseline="middle" ${extra}>${s}</text>`;
 
-/* ---------------- SVG helpers ---------------- */
-const W = 720;
-const $ = id => document.getElementById(id);
-const svg = (h, inner, label) => `<svg viewBox="0 0 ${W} ${h}" role="img" aria-label="${label}">${inner}</svg>`;
-const txt = (x, y, s, cls = "", anchor = "start", extra = "") => `<text x="${x}" y="${y}" class="${cls}" text-anchor="${anchor}" dominant-baseline="middle" ${extra}>${s}</text>`;
-function ticks(lo, hi, n = 5) {
-  const step0 = (hi - lo) / n, p = Math.pow(10, Math.floor(Math.log10(step0)));
-  const step = [1, 2, 2.5, 5, 10].map(k => k * p).find(s => s >= step0);
-  const out = []; for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(6));
-  return out;
-}
-function axis(x, lo, hi, top, bottom, fmt) {
-  return ticks(lo, hi).map(v => `<line class="grid" x1="${x(v)}" x2="${x(v)}" y1="${top}" y2="${bottom}"/>` + txt(x(v), bottom + 14, fmt(v), "muted", "middle")).join("");
-}
-const LOGT = [[1000, "1,000×"], [10000, "10,000×"], [100000, "100,000×"]];
-const f3 = v => v.toFixed(3), f2 = v => v.toFixed(2), f1 = v => v.toFixed(1), f0 = v => Math.round(v).toLocaleString("en");
+        function ticks(lo, hi, n = 5) {
+            const step0 = (hi - lo) / n,
+                p = Math.pow(10, Math.floor(Math.log10(step0)));
+            const step = [1, 2, 2.5, 5, 10].map(k => k * p).find(s => s >= step0);
+            const out = [];
+            for (let v = Math.ceil(lo / step) * step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(6));
+            return out;
+        }
 
-function dumbbell(rows, o) {
-  const L = 170, R = 150, T = 10, rh = 32, H = T + rows.length * rh + 42;
-  const x = v => L + (v - o.lo) / (o.hi - o.lo) * (W - L - R);
-  let s = axis(x, o.lo, o.hi, T, T + rows.length * rh, o.tick || o.fmt);
-  rows.forEach((r, i) => {
-    const y = T + i * rh + rh / 2;
-    s += txt(L - 12, y, r.n, "", "end");
-    s += `<line class="conn" x1="${x(r.m)}" x2="${x(r.u)}" y1="${y}" y2="${y}"/>`;
-    s += `<circle class="m" cx="${x(r.m)}" cy="${y}" r="6"/><circle class="u" cx="${x(r.u)}" cy="${y}" r="6"/>`;
-    s += txt(W - R + 16, y, o.fmt(r.u) + (r.star ? " *" : ""), "ut") + txt(W - R + 82, y, o.fmt(r.m), "mt");
-  });
-  if (o.unit) s += txt((L + W - R) / 2, H - 4, o.unit, "muted", "middle");
-  return svg(H + 6, s, o.unit || "comparison chart");
-}
+        function axis(x, lo, hi, top, bottom, fmt) {
+            return ticks(lo, hi).map(v => `<line class="grid" x1="${x(v)}" x2="${x(v)}" y1="${top}" y2="${bottom}"/>` + txt(x(v), bottom + 14, fmt(v), "muted", "middle")).join("");
+        }
+        const LOGT = [
+            [1000, "1,000×"],
+            [10000, "10,000×"],
+            [100000, "100,000×"]
+        ];
+        const f3 = v => v.toFixed(3),
+            f2 = v => v.toFixed(2),
+            f1 = v => v.toFixed(1),
+            f0 = v => Math.round(v).toLocaleString("en");
 
-/* ---------------- hero: real PPG ---------------- */
-function drawHero(mode) {
-  const { fs, d, mm, uni } = HERO, N = d.length, H = 230, L = 10, R = 10, T = 12, B = 30;
-  const x = i => L + i / (N - 1) * (W - L - R), y = v => T + (1.1 - v) / 2.25 * (H - T - B);
-  let s = "";
-  for (let k = 0; k < 15; k += 2) s += `<rect x="${x(k * 0.2 * fs)}" y="${T}" width="${x(0.2 * fs) - L}" height="${H - T - B}" fill="var(--soft)"/>`;
-  s += `<path class="trace" d="${d.map((v, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1)).join("")}"/>`;
-  if (mode !== "mm") s += uni.map(([t, v]) => `<circle class="open" cx="${x(t * fs)}" cy="${y(v)}" r="3.5"/>`).join("");
-  if (mode !== "uni") s += mm.map(i => `<circle class="u" cx="${x(i)}" cy="${y(d[i])}" r="4"/>`).join("");
-  for (let t = 0; t <= 3; t += 0.5) s += txt(x(t * fs), H - 10, t + " s", "muted", "middle");
-  $("c-hero").innerHTML = svg(H, s, "Real PPG derivative with min/max and uniform 10 Hz samples");
-}
+        function dumbbell(rows, o) {
+            const L = 170,
+                R = 150,
+                T = 10,
+                rh = 32,
+                H = T + rows.length * rh + 42;
+            const x = v => L + (v - o.lo) / (o.hi - o.lo) * (W - L - R);
+            let s = axis(x, o.lo, o.hi, T, T + rows.length * rh, o.tick || o.fmt);
+            rows.forEach((r, i) => {
+                const y = T + i * rh + rh / 2;
+                s += txt(L - 12, y, r.n, "", "end");
+                s += `<line class="conn" x1="${x(r.m)}" x2="${x(r.u)}" y1="${y}" y2="${y}"/>`;
+                s += `<circle class="m" cx="${x(r.m)}" cy="${y}" r="6"/><circle class="u" cx="${x(r.u)}" cy="${y}" r="6"/>`;
+                s += txt(W - R + 16, y, o.fmt(r.u) + (r.star ? " *" : ""), "ut") + txt(W - R + 82, y, o.fmt(r.m), "mt");
+            });
+            if (o.unit) s += txt((L + W - R) / 2, H - 4, o.unit, "muted", "middle");
+            return svg(H + 6, s, o.unit || "comparison chart");
+        }
 
-/* ---------------- sections ---------------- */
-function drawHead(m) {
-  const c = HEAD[m], L = 70, R = 30, T = 16, B = 46, H = 300;
-  const x = v => L + (Math.log10(v) - 3) / (Math.log10(200000) - 3) * (W - L - R), y = v => T + (c.hi - v) / (c.hi - c.lo) * (H - T - B);
-  let s = LOGT.map(([v, l]) => `<line class="grid" x1="${x(v)}" x2="${x(v)}" y1="${T}" y2="${H - B}"/>` + txt(x(v), H - B + 14, l, "muted", "middle")).join("");
-  s += ticks(c.lo, c.hi, 4).map(v => `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/>` + txt(L - 8, y(v), v.toFixed(2), "muted", "end")).join("");
-  c.pts.forEach(p => {
-    const px = x(p.rtf), py = y(p.f1);
-    if (p.k === "u") s += `<circle class="u" cx="${px}" cy="${py}" r="7"/>`;
-    else if (p.k === "m") s += `<rect class="m" x="${px - 6}" y="${py - 6}" width="12" height="12"/>`;
-    else if (p.k === "gs") s += `<rect class="open" x="${px - 5}" y="${py - 5}" width="10" height="10"/>`;
-    else s += `<circle class="open" cx="${px}" cy="${py}" r="5.5"/>`;
-    const right = p.k === "m" || p.right;
-    s += txt(px + (right ? 12 : -12), py + (p.dy || 0), `${p.n} ${p.f1.toFixed(3)}`, p.k === "u" ? "ut" : p.k === "m" ? "mt" : "muted", right ? "start" : "end");
-  });
-  s += txt((L + W - R) / 2, H - 8, "Real-time factor (log scale): higher is cheaper", "muted", "middle");
-  s += txt(14, (T + H - B) / 2, c.unit, "muted", "middle", `transform="rotate(-90 14 ${(T + H - B) / 2})"`);
-  $("c-head").innerHTML = svg(H, s, "F1 against real-time factor");
-  $("n-head").textContent = c.note;
-}
-function drawAcc(m) {
-  const cfg = {
-    f1: { lo: .55, hi: 1.0, fmt: f3, unit: "Median F1 across recordings (higher is better)", note: "Higher or level everywhere. * marks where the F1 difference survives Holm correction: held-out, Testing and both its strata, and Training; on the held-out set the test is run at patient level. MinEl_PPG’s PPV is also higher after correction on Testing and Training." },
-    hr: { lo: 0, hi: 1.0, fmt: f2, tick: v => v, unit: "Median heart-rate error, bpm (lower is better)", note: "Lower on the held-out set (0.124 vs 0.135 bpm), and MinEl_PPG returns a valid heart rate on more recordings (781 vs 772). On the 765 where both do, against one common reference, its limits of agreement are 6–10% narrower in every stratum of reference agreement. MSPTDfast is lower on Training, BIDMC and CapnoBase; none of these differences survives correction." },
-    rr: { lo: 0, hi: 120, fmt: f0, unit: "Median RR-interval RMSE, ms (lower is better)", note: "Equal or lower nearly everywhere; the gap is largest in neonates (86 vs 106 ms) and on PPG-DaLiA (95 vs 111 ms, significant after correction); on the held-out set it is 9 vs 9 ms." }
-  }[m];
-  $("c-acc").innerHTML = dumbbell(DB.map(r => ({ n: r.n, u: r[m][0], m: r[m][1], star: m === "f1" && r.s })), cfg);
-  $("n-acc").textContent = cfg.note;
-}
-function drawStr(m) {
-  const c = STR[m], L = 70, R = 190, T = 16, B = c.sub ? 62 : 48, H = 300, lo = 0, hi = .03;
-  const k = c.x.length, x = i => L + 20 + i / (k - 1) * (W - L - R - 40), y = v => T + (hi - v) / (hi - lo) * (H - T - B);
-  let s = ticks(lo, hi, 4).map(v => `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/>` + txt(L - 8, y(v), v.toFixed(3), "muted", "end")).join("");
-  s += `<line class="zero" x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}"/>`;
-  c.x.forEach((l, i) => { s += txt(x(i), H - B + 14, l, "muted", "middle"); if (c.sub) s += txt(x(i), H - B + 30, c.sub[i], "muted", "middle"); });
-  c.series.forEach(se => {
-    s += `<path d="${se.v.map((v, i) => (i ? "L" : "M") + x(i) + " " + y(v)).join("")}" fill="none" stroke="${se.c}" stroke-width="2.5"/>`;
-    se.v.forEach((v, i) => s += `<circle cx="${x(i)}" cy="${y(v)}" r="4.5" fill="${se.c}"/>`);
-    s += txt(x(k - 1) + 12, y(se.v[k - 1]), se.n, "", "start", `style="fill:${se.c}"`);
-  });
-  s += txt((L + W - R) / 2, H - 6, c.unit, "muted", "middle");
-  s += txt(14, (T + H - B) / 2, "F1 gain over MSPTDfast", "muted", "middle", `transform="rotate(-90 14 ${(T + H - B) / 2})"`);
-  $("c-str").innerHTML = svg(H, s, "F1 gain under stress tests");
-  $("n-str").textContent = c.note;
-}
-function drawHrv(m) {
-  const rows = HRV.filter(r => r.m === m), L = 170, R = 40, T = 26, rh = 30, H = T + rows.length * rh + 40, lo = -1.5, hi = 2.25;
-  const x = v => L + (v - lo) / (hi - lo) * (W - L - R);
-  let s = [-1, 0, 1, 2].map(v => txt(x(v), T + rows.length * rh + 14, v, "muted", "middle")).join("");
-  s += `<line class="zero" x1="${x(0)}" x2="${x(0)}" y1="${T - 8}" y2="${T + rows.length * rh}"/>`;
-  s += `<line class="margin" x1="${x(.5)}" x2="${x(.5)}" y1="${T - 8}" y2="${T + rows.length * rh}"/>`;
-  s += `<line x1="${x(2)}" x2="${x(2)}" y1="${T - 8}" y2="${T + rows.length * rh}" stroke="var(--orange)" stroke-width="2"/>`;
-  s += txt(x(0), T - 16, "no difference", "muted", "end") + txt(x(.5) + 4, T - 16, "½ sample", "muted") + txt(x(2), T - 16, "margin: 2 samples", "mt", "middle");
-  rows.forEach((r, i) => {
-    const y = T + i * rh + rh / 2;
-    s += txt(L - 12, y, r.n, "", "end");
-    s += `<line class="ci" x1="${x(r.lo / r.per)}" x2="${x(r.hi / r.per)}" y1="${y}" y2="${y}"/>`;
-    s += r.sup ? `<circle class="u" cx="${x(r.md / r.per)}" cy="${y}" r="5.5"/>` : `<circle cx="${x(r.md / r.per)}" cy="${y}" r="5" fill="var(--surface)" stroke="var(--teal)" stroke-width="2"/>`;
-    if (r.sup) s += txt(x(2) - 10, y, "superior", "ut", "end");
-  });
-  s += txt((L + W - R) / 2, H - 6, "MinEl_PPG minus MSPTDfast, in sampling intervals (left favours MinEl_PPG)", "muted", "middle");
-  $("c-hrv").innerHTML = svg(H, s, "HRV non-inferiority");
-}
-function drawMot(m) {
-  const cfg = m === "f1" ? { lo: .5, hi: .85, fmt: f3, unit: "Median F1 (higher is better)" } : { lo: 0, hi: 3, fmt: f2, tick: v => v, unit: "Median heart-rate error, bpm (lower is better)" };
-  $("c-mot").innerHTML = dumbbell(ACT.map(r => ({ n: r.n, u: r[m][0], m: r[m][1] })), cfg);
-}
-function drawWhy(m) {
-  let s = "", H;
-  if (m === "timing") {
-    const L = 70, B = 60, T = 16; H = 290; const y = v => T + (100 - v) / 100 * (H - T - B), cls = ["bgrey", "bdark", "u"], arm = ["PLAIN (uniform 10 Hz)", "PLAINREF (+ native refinement)", "MinEl_PPG (min/max)"];
-    s += [0, 25, 50, 75, 100].map(v => `<line class="grid" x1="${L}" x2="${W - 20}" y1="${y(v)}" y2="${y(v)}"/>` + txt(L - 8, y(v), v + "%", "muted", "end")).join("");
-    WHY.timing.forEach((g, gi) => {
-      const gx = L + 60 + gi * 300;
-      g.v.forEach((v, j) => { const bx = gx + j * 64; s += `<rect class="${cls[j]}" x="${bx}" y="${y(v)}" width="52" height="${y(0) - y(v)}" rx="2"/>` + txt(bx + 26, y(v) - 10, v.toFixed(0) + "%", j === 2 ? "ut" : "muted", "middle"); });
-      s += txt(gx + 90, H - B + 16, g.g, "", "middle");
-    });
-    arm.forEach((a, j) => s += `<rect class="${cls[j]}" x="${L + j * 210}" y="${H - 22}" width="12" height="12" rx="2"/>` + txt(L + 18 + j * 210, H - 16, a, "muted"));
-    $("n-why").textContent = "Share of RR intervals within 20 ms of the ECG, on intervals all three arms recovered. Pinned to a 100 ms grid, the uniform stream gets fewer than 40% right; native sample indices restore 80%+, which MinEl_PPG gets without a separate refinement step.";
-  } else {
-    const L = 70, B = 60, T = 16; H = 290; const hi = .07, y = v => T + (hi - v) / hi * (H - T - B);
-    s += [0, .02, .04, .06].map(v => `<line class="grid" x1="${L}" x2="${W - 20}" y1="${y(v)}" y2="${y(v)}"/>` + txt(L - 8, y(v), v.toFixed(2), "muted", "end")).join("");
-    WHY.sens.forEach((r, i) => {
-      const bx = L + 40 + i * 110 + (r.neo ? 40 : 0);
-      s += `<rect class="${r.neo ? "u" : "bdark"}" x="${bx}" y="${y(r.d)}" width="64" height="${y(0) - y(r.d)}" rx="2"/>`;
-      s += txt(bx + 32, y(r.d) - 10, "+" + r.d.toFixed(3), r.neo ? "ut" : "muted", "middle");
-      const [a, b] = r.n.split(" "); s += txt(bx + 32, H - B + 14, a, "", "middle") + (b ? txt(bx + 32, H - B + 30, b, "muted", "middle") : "");
-    });
-    s += txt(L + 40 + 142, H - 10, "adult heart rates", "muted", "middle") + txt(L + 40 + 3 * 110 + 40 + 87, H - 10, "neonatal heart rates (120–180 bpm)", "ut", "middle");
-    $("n-why").textContent = "Median paired sensitivity gain of MinEl_PPG over PLAINREF, which shares its decision logic and native timing and differs only in its input. Small at adult rates, 0.041–0.049 at neonatal rates: the beats the uniform stream loses there cannot be refined back. Under daily-life motion (PPG-DaLiA) the two inputs perform similarly, so the min/max advantage is specific to fast upstrokes.";
-  }
-  $("c-why").innerHTML = svg(H, s, "Ablation");
-}
-function drawCost() {
-  const L = 190, R = 110, T = 10, rh = 34, H = T + COST.length * rh + 46;
-  const x = v => L + (Math.log10(v) - 3) / (Math.log10(200000) - 3) * (W - L - R);
-  let s = LOGT.map(([v, l]) => `<line class="grid" x1="${x(v)}" x2="${x(v)}" y1="${T}" y2="${T + COST.length * rh}"/>` + txt(x(v), T + COST.length * rh + 14, l, "muted", "middle")).join("");
-  COST.forEach((r, i) => {
-    const y = T + i * rh + rh / 2, u = r.h * 3600 / r.c[0], m = r.h * 3600 / r.c[1];
-    s += txt(L - 12, y, r.n, "", "end") + `<line class="conn" x1="${x(m)}" x2="${x(u)}" y1="${y}" y2="${y}"/>`;
-    s += `<rect class="m" x="${x(m) - 6}" y="${y - 6}" width="12" height="12"/><circle class="u" cx="${x(u)}" cy="${y}" r="7"/>`;
-    s += txt(W - R + 20, y, (r.c[1] / r.c[0]).toFixed(1) + "× faster", "ut");
-  });
-  s += txt((L + W - R) / 2, H - 4, "Times faster than real time (log scale)", "muted", "middle");
-  $("c-cost").innerHTML = svg(H, s, "Real-time factor by database");
-}
+        /* ---------------- hero: real PPG ---------------- */
+        function drawHero(mode) {
+            const {
+                fs,
+                d,
+                mm,
+                uni
+            } = HERO, N = d.length, H = 230, L = 10, R = 10, T = 12, B = 30;
+            const x = i => L + i / (N - 1) * (W - L - R),
+                y = v => T + (1.1 - v) / 2.25 * (H - T - B);
+            let s = "";
+            for (let k = 0; k < 15; k += 2) s += `<rect x="${x(k * 0.2 * fs)}" y="${T}" width="${x(0.2 * fs) - L}" height="${H - T - B}" fill="var(--soft)"/>`;
+            s += `<path class="trace" d="${d.map((v, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1)).join("")}"/>`;
+            if (mode !== "mm") s += uni.map(([t, v]) => `<circle class="open" cx="${x(t * fs)}" cy="${y(v)}" r="3.5"/>`).join("");
+            if (mode !== "uni") s += mm.map(i => `<circle class="u" cx="${x(i)}" cy="${y(d[i])}" r="4"/>`).join("");
+            for (let t = 0; t <= 3; t += 0.5) s += txt(x(t * fs), H - 10, t + " s", "muted", "middle");
+            $("c-hero").innerHTML = svg(H, s, "Real PPG derivative with min/max and uniform 10 Hz samples");
+        }
 
-/* ---------------- tables ---------------- */
-const table = (head, rows) => `<table><thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
-$("t-acc").innerHTML = table(["Database", "F1 (median)", "Heart-rate error (bpm)", "RR RMSE (ms)"],
-  DB.map(r => [r.n, `${f3(r.f1[0])} vs ${f3(r.f1[1])}${r.s ? " *" : ""}`, `${f3(r.hr[0])} vs ${f3(r.hr[1])}`, `${r.rr[0]} vs ${r.rr[1]}`]));
+        /* ---------------- sections ---------------- */
+        function drawHead(m) {
+            const c = HEAD[m],
+                L = 70,
+                R = 30,
+                T = 16,
+                B = 46,
+                H = 300;
+            const x = v => L + (Math.log10(v) - 3) / (Math.log10(200000) - 3) * (W - L - R),
+                y = v => T + (c.hi - v) / (c.hi - c.lo) * (H - T - B);
+            let s = LOGT.map(([v, l]) => `<line class="grid" x1="${x(v)}" x2="${x(v)}" y1="${T}" y2="${H - B}"/>` + txt(x(v), H - B + 14, l, "muted", "middle")).join("");
+            s += ticks(c.lo, c.hi, 4).map(v => `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/>` + txt(L - 8, y(v), v.toFixed(2), "muted", "end")).join("");
+            c.pts.forEach(p => {
+                const px = x(p.rtf),
+                    py = y(p.f1);
+                if (p.k === "u") s += `<circle class="u" cx="${px}" cy="${py}" r="7"/>`;
+                else if (p.k === "m") s += `<rect class="m" x="${px - 6}" y="${py - 6}" width="12" height="12"/>`;
+                else if (p.k === "gs") s += `<rect class="open" x="${px - 5}" y="${py - 5}" width="10" height="10"/>`;
+                else s += `<circle class="open" cx="${px}" cy="${py}" r="5.5"/>`;
+                const right = p.k === "m" || p.right;
+                s += txt(px + (right ? 12 : -12), py + (p.dy || 0), `${p.n} ${p.f1.toFixed(3)}`, p.k === "u" ? "ut" : p.k === "m" ? "mt" : "muted", right ? "start" : "end");
+            });
+            s += txt((L + W - R) / 2, H - 8, "Real-time factor (log scale): higher is cheaper", "muted", "middle");
+            s += txt(14, (T + H - B) / 2, c.unit, "muted", "middle", `transform="rotate(-90 14 ${(T + H - B) / 2})"`);
+            $("c-head").innerHTML = svg(H, s, "F1 against real-time factor");
+            $("n-head").textContent = c.note;
+        }
 
-/* ---------------- interaction ---------------- */
-function seg(id, fn) {
-  const box = $(id);
-  box.addEventListener("click", e => {
-    const b = e.target.closest("button"); if (!b) return;
-    box.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
-    fn(b.dataset.m);
-  });
-}
-seg("seg-hero", drawHero); seg("seg-head", drawHead); seg("seg-acc", drawAcc); seg("seg-str", drawStr); seg("seg-hrv", drawHrv); seg("seg-mot", drawMot); seg("seg-why", drawWhy);
-drawHero("both"); drawHead("held"); drawAcc("f1"); drawStr("tol"); drawHrv("SDNN"); drawMot("f1"); drawWhy("timing"); drawCost();
+        function drawAcc(m) {
+            const cfg = {
+                f1: {
+                    lo: .55,
+                    hi: 1.0,
+                    fmt: f3,
+                    unit: "Median F1 across recordings (higher is better)",
+                    note: "Higher or level everywhere. * marks where the F1 difference survives Holm correction: held-out, Testing and both its strata, and Training; on the held-out set the test is run at patient level. MinEl_PPG’s PPV is also higher after correction on Testing and Training."
+                },
+                hr: {
+                    lo: 0,
+                    hi: 1.0,
+                    fmt: f2,
+                    tick: v => v,
+                    unit: "Median heart-rate error, bpm (lower is better)",
+                    note: "Lower on the held-out set (0.124 vs 0.135 bpm), and MinEl_PPG returns a valid heart rate on more recordings (781 vs 772). On the 765 where both do, against one common reference, its limits of agreement are 6–10% narrower in every stratum of reference agreement. MSPTDfast is lower on Training, BIDMC and CapnoBase; none of these differences survives correction."
+                },
+                rr: {
+                    lo: 0,
+                    hi: 120,
+                    fmt: f0,
+                    unit: "Median RR-interval RMSE, ms (lower is better)",
+                    note: "Equal or lower nearly everywhere; the gap is largest in neonates (86 vs 106 ms) and on PPG-DaLiA (95 vs 111 ms, significant after correction); on the held-out set it is 9 vs 9 ms."
+                }
+            } [m];
+            $("c-acc").innerHTML = dumbbell(DB.map(r => ({
+                n: r.n,
+                u: r[m][0],
+                m: r[m][1],
+                star: m === "f1" && r.s
+            })), cfg);
+            $("n-acc").textContent = cfg.note;
+        }
 
-const SECT = [
-  ["headline", "Overview", "Is it accurate and cheap at once?", "Yes: held-out median F1 0.961 vs 0.949 at under a tenth of the compute."],
-  ["accuracy", "Detection", "Does it detect more beats?", "Higher or level on all seven databases, never significantly lower."],
-  ["stress", "Stress tests", "Does the lead survive stress tests?", "Yes: it widens at 75 ms and holds when the references agree."],
-  ["hrv", "HRV", "Is HRV ever worse?", "No: never worse, and better in 9 of 21 end-to-end comparisons."],
-  ["motion", "Daily life", "Does it hold up in daily life?", "Higher F1 in eight of nine PPG-DaLiA activities and far more beats found; the per-subject F1 gain is not significant over 15 subjects."],
-  ["why", "Why", "Where do the gains come from?", "The detector itself, plus the min/max stream at high heart rates."],
-  ["cost", "Cost", "What does it cost?", "5.8–52× less compute than MSPTDfast; about 70 laptops for the whole US."],
-  ["limits", "Limits", "Where does it fall short?", "In AF it trades a few weak early beats for fewer false detections; F1 is level."],
-  ["checks", "Fairness", "Could the comparison favour it?", "The comparator runs its own benchmark pipeline, on held-out data."]
-];
-const go = id => document.getElementById(id).scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-$("toc").innerHTML = SECT.map(([id, short]) => `<button data-id="${id}">${short}</button>`).join("");
-$("glance").innerHTML = SECT.map(([id, , q, a]) => `<li><button data-id="${id}"><span class="q">${q}</span><span class="a">${a}</span><span class="go">See results</span></button></li>`).join("");
-document.addEventListener("click", e => { const b = e.target.closest("[data-id]"); if (b) go(b.dataset.id); });
-const obs = new IntersectionObserver(es => es.forEach(en => {
-  if (en.isIntersecting) document.querySelectorAll("#toc button").forEach(b => b.classList.toggle("on", b.dataset.id === en.target.id));
-}), { rootMargin: "-40% 0px -55% 0px" });
-document.querySelectorAll("main section").forEach(s => obs.observe(s));
-if (location.hash && document.getElementById(location.hash.slice(1))) go(location.hash.slice(1));
-</script>
+        function drawStr(m) {
+            const c = STR[m],
+                L = 70,
+                R = 190,
+                T = 16,
+                B = c.sub ? 62 : 48,
+                H = 300,
+                lo = 0,
+                hi = .03;
+            const k = c.x.length,
+                x = i => L + 20 + i / (k - 1) * (W - L - R - 40),
+                y = v => T + (hi - v) / (hi - lo) * (H - T - B);
+            let s = ticks(lo, hi, 4).map(v => `<line class="grid" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/>` + txt(L - 8, y(v), v.toFixed(3), "muted", "end")).join("");
+            s += `<line class="zero" x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}"/>`;
+            c.x.forEach((l, i) => {
+                s += txt(x(i), H - B + 14, l, "muted", "middle");
+                if (c.sub) s += txt(x(i), H - B + 30, c.sub[i], "muted", "middle");
+            });
+            c.series.forEach(se => {
+                s += `<path d="${se.v.map((v, i) => (i ? "L" : "M") + x(i) + " " + y(v)).join("")}" fill="none" stroke="${se.c}" stroke-width="2.5"/>`;
+                se.v.forEach((v, i) => s += `<circle cx="${x(i)}" cy="${y(v)}" r="4.5" fill="${se.c}"/>`);
+                s += txt(x(k - 1) + 12, y(se.v[k - 1]), se.n, "", "start", `style="fill:${se.c}"`);
+            });
+            s += txt((L + W - R) / 2, H - 6, c.unit, "muted", "middle");
+            s += txt(14, (T + H - B) / 2, "F1 gain over MSPTDfast", "muted", "middle", `transform="rotate(-90 14 ${(T + H - B) / 2})"`);
+            $("c-str").innerHTML = svg(H, s, "F1 gain under stress tests");
+            $("n-str").textContent = c.note;
+        }
+
+        function drawHrv(m) {
+            const rows = HRV.filter(r => r.m === m),
+                L = 170,
+                R = 40,
+                T = 26,
+                rh = 30,
+                H = T + rows.length * rh + 40,
+                lo = -1.5,
+                hi = 2.25;
+            const x = v => L + (v - lo) / (hi - lo) * (W - L - R);
+            let s = [-1, 0, 1, 2].map(v => txt(x(v), T + rows.length * rh + 14, v, "muted", "middle")).join("");
+            s += `<line class="zero" x1="${x(0)}" x2="${x(0)}" y1="${T - 8}" y2="${T + rows.length * rh}"/>`;
+            s += `<line class="margin" x1="${x(.5)}" x2="${x(.5)}" y1="${T - 8}" y2="${T + rows.length * rh}"/>`;
+            s += `<line x1="${x(2)}" x2="${x(2)}" y1="${T - 8}" y2="${T + rows.length * rh}" stroke="var(--orange)" stroke-width="2"/>`;
+            s += txt(x(0), T - 16, "no difference", "muted", "end") + txt(x(.5) + 4, T - 16, "½ sample", "muted") + txt(x(2), T - 16, "margin: 2 samples", "mt", "middle");
+            rows.forEach((r, i) => {
+                const y = T + i * rh + rh / 2;
+                s += txt(L - 12, y, r.n, "", "end");
+                s += `<line class="ci" x1="${x(r.lo / r.per)}" x2="${x(r.hi / r.per)}" y1="${y}" y2="${y}"/>`;
+                s += r.sup ? `<circle class="u" cx="${x(r.md / r.per)}" cy="${y}" r="5.5"/>` : `<circle cx="${x(r.md / r.per)}" cy="${y}" r="5" fill="var(--surface)" stroke="var(--teal)" stroke-width="2"/>`;
+                if (r.sup) s += txt(x(2) - 10, y, "superior", "ut", "end");
+            });
+            s += txt((L + W - R) / 2, H - 6, "MinEl_PPG minus MSPTDfast, in sampling intervals (left favours MinEl_PPG)", "muted", "middle");
+            $("c-hrv").innerHTML = svg(H, s, "HRV non-inferiority");
+        }
+
+        function drawMot(m) {
+            const cfg = m === "f1" ? {
+                lo: .5,
+                hi: .85,
+                fmt: f3,
+                unit: "Median F1 (higher is better)"
+            } : {
+                lo: 0,
+                hi: 3,
+                fmt: f2,
+                tick: v => v,
+                unit: "Median heart-rate error, bpm (lower is better)"
+            };
+            $("c-mot").innerHTML = dumbbell(ACT.map(r => ({
+                n: r.n,
+                u: r[m][0],
+                m: r[m][1]
+            })), cfg);
+        }
+
+        function drawWhy(m) {
+            let s = "",
+                H;
+            if (m === "timing") {
+                const L = 70,
+                    B = 60,
+                    T = 16;
+                H = 290;
+                const y = v => T + (100 - v) / 100 * (H - T - B),
+                    cls = ["bgrey", "bdark", "u"],
+                    arm = ["PLAIN (uniform 10 Hz)", "PLAINREF (+ native refinement)", "MinEl_PPG (min/max)"];
+                s += [0, 25, 50, 75, 100].map(v => `<line class="grid" x1="${L}" x2="${W - 20}" y1="${y(v)}" y2="${y(v)}"/>` + txt(L - 8, y(v), v + "%", "muted", "end")).join("");
+                WHY.timing.forEach((g, gi) => {
+                    const gx = L + 60 + gi * 300;
+                    g.v.forEach((v, j) => {
+                        const bx = gx + j * 64;
+                        s += `<rect class="${cls[j]}" x="${bx}" y="${y(v)}" width="52" height="${y(0) - y(v)}" rx="2"/>` + txt(bx + 26, y(v) - 10, v.toFixed(0) + "%", j === 2 ? "ut" : "muted", "middle");
+                    });
+                    s += txt(gx + 90, H - B + 16, g.g, "", "middle");
+                });
+                arm.forEach((a, j) => s += `<rect class="${cls[j]}" x="${L + j * 210}" y="${H - 22}" width="12" height="12" rx="2"/>` + txt(L + 18 + j * 210, H - 16, a, "muted"));
+                $("n-why").textContent = "Share of RR intervals within 20 ms of the ECG, on intervals all three arms recovered. Pinned to a 100 ms grid, the uniform stream gets fewer than 40% right; native sample indices restore 80%+, which MinEl_PPG gets without a separate refinement step.";
+            } else {
+                const L = 70,
+                    B = 60,
+                    T = 16;
+                H = 290;
+                const hi = .07,
+                    y = v => T + (hi - v) / hi * (H - T - B);
+                s += [0, .02, .04, .06].map(v => `<line class="grid" x1="${L}" x2="${W - 20}" y1="${y(v)}" y2="${y(v)}"/>` + txt(L - 8, y(v), v.toFixed(2), "muted", "end")).join("");
+                WHY.sens.forEach((r, i) => {
+                    const bx = L + 40 + i * 110 + (r.neo ? 40 : 0);
+                    s += `<rect class="${r.neo ? "u" : "bdark"}" x="${bx}" y="${y(r.d)}" width="64" height="${y(0) - y(r.d)}" rx="2"/>`;
+                    s += txt(bx + 32, y(r.d) - 10, "+" + r.d.toFixed(3), r.neo ? "ut" : "muted", "middle");
+                    const [a, b] = r.n.split(" ");
+                    s += txt(bx + 32, H - B + 14, a, "", "middle") + (b ? txt(bx + 32, H - B + 30, b, "muted", "middle") : "");
+                });
+                s += txt(L + 40 + 142, H - 10, "adult heart rates", "muted", "middle") + txt(L + 40 + 3 * 110 + 40 + 87, H - 10, "neonatal heart rates (120–180 bpm)", "ut", "middle");
+                $("n-why").textContent = "Median paired sensitivity gain of MinEl_PPG over PLAINREF, which shares its decision logic and native timing and differs only in its input. Small at adult rates, 0.041–0.049 at neonatal rates: the beats the uniform stream loses there cannot be refined back. Under daily-life motion (PPG-DaLiA) the two inputs perform similarly, so the min/max advantage is specific to fast upstrokes.";
+            }
+            $("c-why").innerHTML = svg(H, s, "Ablation");
+        }
+
+        function drawCost() {
+            const L = 190,
+                R = 110,
+                T = 10,
+                rh = 34,
+                H = T + COST.length * rh + 46;
+            const x = v => L + (Math.log10(v) - 3) / (Math.log10(200000) - 3) * (W - L - R);
+            let s = LOGT.map(([v, l]) => `<line class="grid" x1="${x(v)}" x2="${x(v)}" y1="${T}" y2="${T + COST.length * rh}"/>` + txt(x(v), T + COST.length * rh + 14, l, "muted", "middle")).join("");
+            COST.forEach((r, i) => {
+                const y = T + i * rh + rh / 2,
+                    u = r.h * 3600 / r.c[0],
+                    m = r.h * 3600 / r.c[1];
+                s += txt(L - 12, y, r.n, "", "end") + `<line class="conn" x1="${x(m)}" x2="${x(u)}" y1="${y}" y2="${y}"/>`;
+                s += `<rect class="m" x="${x(m) - 6}" y="${y - 6}" width="12" height="12"/><circle class="u" cx="${x(u)}" cy="${y}" r="7"/>`;
+                s += txt(W - R + 20, y, (r.c[1] / r.c[0]).toFixed(1) + "× faster", "ut");
+            });
+            s += txt((L + W - R) / 2, H - 4, "Times faster than real time (log scale)", "muted", "middle");
+            $("c-cost").innerHTML = svg(H, s, "Real-time factor by database");
+        }
+
+        /* ---------------- tables ---------------- */
+        const table = (head, rows) => `<table><thead><tr>${head.map(h => `<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+        $("t-acc").innerHTML = table(["Database", "F1 (median)", "Heart-rate error (bpm)", "RR RMSE (ms)"],
+            DB.map(r => [r.n, `${f3(r.f1[0])} vs ${f3(r.f1[1])}${r.s ? " *" : ""}`, `${f3(r.hr[0])} vs ${f3(r.hr[1])}`, `${r.rr[0]} vs ${r.rr[1]}`]));
+
+        /* ---------------- interaction ---------------- */
+        function seg(id, fn) {
+            const box = $(id);
+            box.addEventListener("click", e => {
+                const b = e.target.closest("button");
+                if (!b) return;
+                box.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+                fn(b.dataset.m);
+            });
+        }
+        seg("seg-hero", drawHero);
+        seg("seg-head", drawHead);
+        seg("seg-acc", drawAcc);
+        seg("seg-str", drawStr);
+        seg("seg-hrv", drawHrv);
+        seg("seg-mot", drawMot);
+        seg("seg-why", drawWhy);
+        drawHero("both");
+        drawHead("held");
+        drawAcc("f1");
+        drawStr("tol");
+        drawHrv("SDNN");
+        drawMot("f1");
+        drawWhy("timing");
+        drawCost();
+
+        const SECT = [
+            ["headline", "Overview", "Is it accurate and cheap at once?", "Yes: held-out median F1 0.961 vs 0.949 at under a tenth of the compute."],
+            ["accuracy", "Detection", "Does it detect more beats?", "Higher or level on all seven databases, never significantly lower."],
+            ["stress", "Stress tests", "Does the lead survive stress tests?", "Yes: it widens at 75 ms and holds when the references agree."],
+            ["hrv", "HRV", "Is HRV ever worse?", "No: never worse, and better in 9 of 21 end-to-end comparisons."],
+            ["motion", "Daily life", "Does it hold up in daily life?", "Higher F1 in eight of nine PPG-DaLiA activities and far more beats found; the per-subject F1 gain is not significant over 15 subjects."],
+            ["why", "Why", "Where do the gains come from?", "The detector itself, plus the min/max stream at high heart rates."],
+            ["cost", "Cost", "What does it cost?", "5.8–52× less compute than MSPTDfast; about 70 laptops for the whole US."],
+            ["limits", "Limits", "Where does it fall short?", "In AF it trades a few weak early beats for fewer false detections; F1 is level."],
+            ["checks", "Fairness", "Could the comparison favour it?", "The comparator runs its own benchmark pipeline, on held-out data."]
+        ];
+        const go = id => document.getElementById(id).scrollIntoView({
+            behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"
+        });
+        $("toc").innerHTML = SECT.map(([id, short]) => `<button data-id="${id}">${short}</button>`).join("");
+        $("glance").innerHTML = SECT.map(([id, , q, a]) => `<li><button data-id="${id}"><span class="q">${q}</span><span class="a">${a}</span><span class="go">See results</span></button></li>`).join("");
+        document.addEventListener("click", e => {
+            const b = e.target.closest("[data-id]");
+            if (b) go(b.dataset.id);
+        });
+        const obs = new IntersectionObserver(es => es.forEach(en => {
+            if (en.isIntersecting) document.querySelectorAll("#toc button").forEach(b => b.classList.toggle("on", b.dataset.id === en.target.id));
+        }), {
+            rootMargin: "-40% 0px -55% 0px"
+        });
+        document.querySelectorAll("main section").forEach(s => obs.observe(s));
+        if (location.hash && document.getElementById(location.hash.slice(1))) go(location.hash.slice(1));
+    </script>
 </body>
+
 </html>
