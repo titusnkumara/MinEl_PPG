@@ -2,9 +2,13 @@
 
 Fast, accurate photoplethysmogram (PPG) beat detection from **sparse extremum coding**. The input is reduced to about 30 Hz, the band-passed PPG derivative is split into 0.2 s blocks, and only each block's minimum and maximum are kept, with their sample indices. A rhythm-aware detector works on this stream of ten values per second, at any sampling rate, and each beat's timing is refined back to native resolution.
 
+# Benchmark results
+
+A high level summary of the results available here: https://titusnkumara.github.io/MinEl_PPG/ 
+
 This repository contains the detector and the full code to reproduce the paper:
 
-> **MinEl_PPG: Sparse Min–Max Coding for Fast, Accurate PPG Beat Detection.** [authors, journal, year, DOI ____]
+> **MinEl_PPG: Sparse Min–Max Coding for Fast, Accurate PPG Beat Detection.** [Paper not published yet]
 
 ## Use the detector
 
