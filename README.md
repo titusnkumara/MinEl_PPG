@@ -67,4 +67,4 @@ If you use this code, please cite the paper above. If you use the data, also cit
 
 ## License
 
-MIT (see `LICENSE`), with two exceptions: `benchmark/pan_tompkin.m` keeps its original license (see its header), and `c/msptd_pb.c` / `c/msptd_pb.h` are GPL-3.0 because they translate GPL-3.0 code from the ppg-beats toolbox; programs in `c/` that link them (`run_detector`, `bench`, `throughput`) are therefore distributed under GPL-3.0 as built binaries. The MATLAB benchmark only calls ppg-beats and includes none of its code.
+Apache License version 2.0 (see `LICENSE`), with two exceptions: `benchmark/pan_tompkin.m` keeps its original license (see its header), and `c/msptd_pb.c` / `c/msptd_pb.h` are GPL-3.0 because they translate GPL-3.0 code from the ppg-beats toolbox; programs in `c/` that link them (`run_detector`, `bench`, `throughput`) are therefore distributed under GPL-3.0 as built binaries. The MATLAB benchmark only calls ppg-beats and includes none of its code.
