@@ -63,7 +63,7 @@ Timings depend on the machine; the paper's were measured in MATLAB and, for whol
 
 ## Citation
 
-If you use this code, please cite the paper above. If you use the data, also cite the Zenodo record and the original databases.
+If you use this code, please cite the paper above. If you use the data, also cite the original databases.
 
 ## License
 
