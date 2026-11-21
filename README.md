@@ -48,7 +48,7 @@ MinEl_PPG/
                           whole-machine throughput benchmark (see c/README.md)
 ```
 
-1. **Requirements.** MATLAB R2024b, Signal Processing Toolbox, Statistics and Machine Learning Toolbox, and the [ppg-beats toolbox](https://github.com/peterhcharlton/ppg-beats) version ____ on the MATLAB path (it provides MSPTDfast). For the C benchmarks: gcc or clang (C11) and POSIX threads.
+1. **Requirements.** MATLAB R2024b, Signal Processing Toolbox, Statistics and Machine Learning Toolbox, and the [ppg-beats toolbox](https://github.com/peterhcharlton/ppg-beats) version 2 on the MATLAB path (it provides MSPTDfast). For the C benchmarks: gcc or clang (C11) and POSIX threads.
 2. **Data.** Run `download_data`. It fetches the seven databases from Zenodo ([10.5281/zenodo.23721153](https://doi.org/10.5281/zenodo.23721153), 437 MB), checks each file's MD5, resumes interrupted downloads and unzips PPG-DaLiA. By default it writes to the parent of the repository folder, which is where `run_paper.m` looks (`DATA = '../'`):
    ```
    ../mimic-large-test/   ../mimic_test/   ../mimic_train/   ../mimic_perform_af/
